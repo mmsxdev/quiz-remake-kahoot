@@ -1,0 +1,434 @@
+[
+  {
+    "id": 1,
+    "block": "A",
+    "blockLabel": "Identificação Direta",
+    "type": "two-phase",
+    "text": "Interpretar diagramas elétricos para identificar componentes e conexões.",
+    "options": [],
+    "correctClassification": "Capacidade",
+    "phase2": {
+      "prompt": "Por que Capacidade?",
+      "options": [
+        {
+          "id": "1_2a",
+          "text": "É uma ação específica e delimitada que contribui para o desempenho profissional, mas não representa uma atuação integrada em situação real de trabalho.",
+          "isCorrect": true
+        },
+        {
+          "id": "1_2b",
+          "text": "Envolve a mobilização integrada de conhecimentos, habilidades e atitudes em contexto real de trabalho.",
+          "isCorrect": false
+        },
+        {
+          "id": "1_2c",
+          "text": "Representa um desempenho profissional amplo, exigindo tomada de decisão autônoma em situações complexas.",
+          "isCorrect": false
+        },
+        {
+          "id": "1_2d",
+          "text": "É o resultado final esperado da formação profissional, reconhecido pelo mercado de trabalho.",
+          "isCorrect": false
+        }
+      ]
+    },
+    "explanation": "Interpretar diagramas é uma ação específica e delimitada — uma Capacidade Técnica. Ela contribui para o desempenho profissional, mas não representa uma atuação integrada em situação real de trabalho, o que caracterizaria uma Competência.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Técnica",
+    "difficulty": "básico"
+  },
+  {
+    "id": 2,
+    "block": "A",
+    "blockLabel": "Identificação Direta",
+    "type": "two-phase",
+    "text": "Realizar manutenção de sistemas eletromecânicos conforme normas técnicas e de segurança.",
+    "options": [],
+    "correctClassification": "Competência",
+    "phase2": {
+      "prompt": "Por que Competência?",
+      "options": [
+        {
+          "id": "2_2a",
+          "text": "Representa desempenho profissional amplo e integrado — mobiliza conhecimentos técnicos, normas de segurança, habilidades práticas e atitudes em situação real de trabalho.",
+          "isCorrect": true
+        },
+        {
+          "id": "2_2b",
+          "text": "É uma ação específica desenvolvida apenas em laboratório durante a formação.",
+          "isCorrect": false
+        },
+        {
+          "id": "2_2c",
+          "text": "Refere-se a uma habilidade isolada de manutenção mecânica treinada em simulador.",
+          "isCorrect": false
+        },
+        {
+          "id": "2_2d",
+          "text": "É uma capacidade técnica porque envolve apenas equipamentos industriais.",
+          "isCorrect": false
+        }
+      ]
+    },
+    "explanation": "Representa um desempenho profissional amplo e integrado: mobiliza conhecimentos técnicos, normas de segurança, habilidades práticas e atitudes profissionais em uma situação real de trabalho. Isso caracteriza uma Competência.",
+    "conceptHighlight": "Competência",
+    "capabilityCategory": null,
+    "difficulty": "básico"
+  },
+  {
+    "id": 3,
+    "block": "A",
+    "blockLabel": "Identificação Direta",
+    "type": "two-phase",
+    "text": "Organizar documentos físicos e digitais seguindo procedimentos estabelecidos.",
+    "options": [],
+    "correctClassification": "Capacidade",
+    "phase2": {
+      "prompt": "Por que Capacidade?",
+      "options": [
+        {
+          "id": "3_2a",
+          "text": "É uma ação específica desenvolvida durante a formação — organizar conforme procedimentos — sem envolver mobilização integrada de múltiplas capacidades em contexto real.",
+          "isCorrect": true
+        },
+        {
+          "id": "3_2b",
+          "text": "Envolve decisão autônoma e integração de saberes em situação real de trabalho.",
+          "isCorrect": false
+        },
+        {
+          "id": "3_2c",
+          "text": "Representa o resultado final esperado de toda a formação em secretariado.",
+          "isCorrect": false
+        },
+        {
+          "id": "3_2d",
+          "text": "É uma competência porque ocorre dentro de um ambiente organizacional real.",
+          "isCorrect": false
+        }
+      ]
+    },
+    "explanation": "É uma ação específica desenvolvida durante a formação — organizar documentos conforme procedimentos. Por ser delimitada e não envolver mobilização integrada de múltiplas capacidades em contexto real, trata-se de uma Capacidade Técnica.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Técnica",
+    "difficulty": "básico"
+  },
+  {
+    "id": 4,
+    "block": "A",
+    "blockLabel": "Identificação Direta",
+    "type": "two-phase",
+    "text": "Planejar atividades administrativas considerando prioridades e prazos.",
+    "options": [],
+    "correctClassification": "Capacidade",
+    "phase2": {
+      "prompt": "Por que Capacidade?",
+      "options": [
+        {
+          "id": "4_2a",
+          "text": "Planejar é uma ação formativa específica — uma Capacidade Metodológica. A competência exigiria planejamento, execução e ajuste integrados em contexto real de trabalho.",
+          "isCorrect": true
+        },
+        {
+          "id": "4_2b",
+          "text": "Planejar envolve decisões tão complexas que só um profissional competente é capaz de realizá-las.",
+          "isCorrect": false
+        },
+        {
+          "id": "4_2c",
+          "text": "É uma competência porque exige conhecimento avançado de gestão de projetos.",
+          "isCorrect": false
+        },
+        {
+          "id": "4_2d",
+          "text": "Representa o desempenho profissional completo de um auxiliar administrativo.",
+          "isCorrect": false
+        }
+      ]
+    },
+    "explanation": "Planejar é uma ação formativa específica — uma Capacidade Metodológica. Apesar de requerer reflexão, ela é um pré-requisito para a competência administrativa, não a competência em si, que envolveria planejar, executar e ajustar em contexto real.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Metodológica",
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 5,
+    "block": "A",
+    "blockLabel": "Identificação Direta",
+    "type": "two-phase",
+    "text": "Apoiar processos administrativos de acordo com procedimentos organizacionais.",
+    "options": [],
+    "correctClassification": "Competência",
+    "phase2": {
+      "prompt": "Por que Competência?",
+      "options": [
+        {
+          "id": "5_2a",
+          "text": "Descreve atuação profissional completa: 'apoiar processos' pressupõe mobilização integrada de capacidades técnicas, organizativas e sociais para gerar resultados no ambiente de trabalho.",
+          "isCorrect": true
+        },
+        {
+          "id": "5_2b",
+          "text": "É uma ação específica ensinada passo a passo em sala de aula durante a formação.",
+          "isCorrect": false
+        },
+        {
+          "id": "5_2c",
+          "text": "Refere-se apenas a uma habilidade social de relacionamento interpessoal.",
+          "isCorrect": false
+        },
+        {
+          "id": "5_2d",
+          "text": "É uma capacidade organizativa porque envolve seguir procedimentos estabelecidos.",
+          "isCorrect": false
+        }
+      ]
+    },
+    "explanation": "Descreve uma atuação profissional completa em contexto organizacional real. 'Apoiar processos administrativos' pressupõe mobilização integrada de diversas capacidades (técnicas, organizativas e sociais) para gerar resultado no ambiente de trabalho — característica de Competência.",
+    "conceptHighlight": "Competência",
+    "capabilityCategory": null,
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 6,
+    "block": "A",
+    "blockLabel": "Identificação Direta",
+    "type": "two-phase",
+    "text": "Trabalhar em equipe para atingir objetivos comuns.",
+    "options": [],
+    "correctClassification": "Capacidade",
+    "phase2": {
+      "prompt": "Por que Capacidade?",
+      "options": [
+        {
+          "id": "6_2a",
+          "text": "É uma Capacidade Social desenvolvida durante a formação. Por ser uma ação específica, ela integra, junto com outras capacidades, a competência profissional — mas sozinha não a representa.",
+          "isCorrect": true
+        },
+        {
+          "id": "6_2b",
+          "text": "Envolve a mobilização integrada de todos os saberes profissionais em situação real de trabalho.",
+          "isCorrect": false
+        },
+        {
+          "id": "6_2c",
+          "text": "É uma competência porque o trabalho em equipe é requisito obrigatório no mercado de trabalho.",
+          "isCorrect": false
+        },
+        {
+          "id": "6_2d",
+          "text": "Representa o resultado final esperado da formação em qualquer área profissional.",
+          "isCorrect": false
+        }
+      ]
+    },
+    "explanation": "É uma Capacidade Social, essencial para o desempenho profissional. Trabalhar em equipe é desenvolvido durante a formação e compõe, junto com outras capacidades, a competência profissional. Sozinha, não representa uma atuação profissional integrada.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Social",
+    "difficulty": "básico"
+  },
+  {
+    "id": 7,
+    "block": "B",
+    "blockLabel": "Situações do Cotidiano Docente",
+    "type": "standard",
+    "text": "Um docente afirma: \"Meu objetivo é ensinar Excel.\" Do ponto de vista da MSEP, qual é o principal problema dessa formulação?",
+    "options": [
+      { "id": "7a", "text": "O foco está no conteúdo (ferramenta), não no desenvolvimento de capacidades ou competências do estudante.", "isCorrect": true },
+      { "id": "7b", "text": "Excel é um conteúdo muito simples para ser trabalhado em nível profissional.", "isCorrect": false },
+      { "id": "7c", "text": "A MSEP não permite o uso de ferramentas tecnológicas em sala de aula.", "isCorrect": false },
+      { "id": "7d", "text": "Não há problema — ensinar um software é equivalente a desenvolver uma competência.", "isCorrect": false }
+    ],
+    "explanation": "Na MSEP, o foco do docente não é o conteúdo em si, mas o desenvolvimento de capacidades que levem o estudante a alcançar competências profissionais. 'Ensinar Excel' é uma abordagem centrada na ferramenta. A reescrita correta seria: 'Quero que os alunos utilizem planilhas eletrônicas para organizar, analisar informações e apoiar a tomada de decisões.'",
+    "conceptHighlight": "Ambos",
+    "capabilityCategory": null,
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 8,
+    "block": "B",
+    "blockLabel": "Situações do Cotidiano Docente",
+    "type": "standard",
+    "text": "Um docente afirma: \"Quero que meus alunos sejam capazes de analisar dados e tomar decisões utilizando planilhas eletrônicas.\" Essa formulação está mais próxima de competência ou de capacidade?",
+    "options": [
+      { "id": "8a", "text": "Competência — porque envolve tomada de decisão.", "isCorrect": false },
+      { "id": "8b", "text": "Capacidade — porque descreve uma ação específica que o estudante precisa desenvolver.", "isCorrect": true },
+      { "id": "8c", "text": "Nenhuma das duas — é um objetivo de aula comum.", "isCorrect": false },
+      { "id": "8d", "text": "Competência — porque menciona planilhas eletrônicas, que é uma tecnologia profissional.", "isCorrect": false }
+    ],
+    "explanation": "A frase descreve uma ação específica que o estudante precisa desenvolver durante a formação (analisar dados e tomar decisões com planilhas). Isso é uma Capacidade Metodológica/Técnica. Para ser Competência, precisaria descrever uma atuação profissional integrada em contexto real de trabalho.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Metodológica",
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 9,
+    "block": "B",
+    "blockLabel": "Situações do Cotidiano Docente",
+    "type": "standard",
+    "text": "Complete a frase da MSEP: \"Na MSEP, o docente desenvolve __________ para que o estudante consiga demonstrar __________ no mundo do trabalho.\"",
+    "options": [
+      { "id": "9a", "text": "competências / capacidades", "isCorrect": false },
+      { "id": "9b", "text": "habilidades / conhecimentos", "isCorrect": false },
+      { "id": "9c", "text": "capacidades / competências", "isCorrect": true },
+      { "id": "9d", "text": "conteúdos / habilidades", "isCorrect": false }
+    ],
+    "explanation": "Esta é a frase-síntese da MSEP: o docente planeja situações de aprendizagem para desenvolver CAPACIDADES nos estudantes. O objetivo final é que, ao atuar no mundo do trabalho, o egresso demonstre as COMPETÊNCIAS descritas no Perfil Profissional da ocupação.",
+    "conceptHighlight": "Ambos",
+    "capabilityCategory": null,
+    "difficulty": "básico"
+  },
+  {
+    "id": 10,
+    "block": "B",
+    "blockLabel": "Situações do Cotidiano Docente",
+    "type": "standard",
+    "text": "Paulo aprendeu a operar um torno mecânico seguindo procedimentos padrão. Carla, além de operar, identifica variações no material, ajusta parâmetros e justifica suas decisões tecnicamente. Quem demonstra Competência?",
+    "options": [
+      { "id": "10a", "text": "Paulo — domina a operação do equipamento.", "isCorrect": false },
+      { "id": "10b", "text": "Carla — mobiliza saberes integrados para resolver situações reais de trabalho.", "isCorrect": true },
+      { "id": "10c", "text": "Ambos — qualquer domínio técnico é uma competência.", "isCorrect": false },
+      { "id": "10d", "text": "Nenhum — competência só é avaliada após o término do curso.", "isCorrect": false }
+    ],
+    "explanation": "Carla demonstra Competência porque vai além da execução mecânica: ela mobiliza conhecimentos técnicos, analisa o contexto, toma decisões e as justifica. Paulo ainda está no nível da Capacidade — domina a execução, mas ainda não demonstra atuação autônoma e integrada em situação real.",
+    "conceptHighlight": "Competência",
+    "capabilityCategory": null,
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 11,
+    "block": "B",
+    "blockLabel": "Situações do Cotidiano Docente",
+    "type": "standard",
+    "text": "Um coordenador pedagógico redesenha o plano de curso substituindo 'capacidades' por 'objetivos de aula' baseados em conteúdos. Essa mudança está alinhada à lógica da MSEP?",
+    "options": [
+      { "id": "11a", "text": "Sim — objetivos de aula e capacidades são equivalentes.", "isCorrect": false },
+      { "id": "11b", "text": "Sim — a MSEP permite organizar o currículo por conteúdos.", "isCorrect": false },
+      { "id": "11c", "text": "Não — a MSEP organiza o currículo por capacidades, não por conteúdos ou objetivos de aula.", "isCorrect": true },
+      { "id": "11d", "text": "Não — a MSEP não permite planos de curso.", "isCorrect": false }
+    ],
+    "explanation": "Na MSEP, o currículo é estruturado a partir das Competências do Perfil Profissional, que se desdobram em Capacidades (Técnicas, Sociais, Organizativas e Metodológicas). Os conteúdos são meios para desenvolver capacidades — não fins em si mesmos. Organizar por 'objetivos de conteúdo' é uma abordagem tradicional, não da MSEP.",
+    "conceptHighlight": "Ambos",
+    "capabilityCategory": null,
+    "difficulty": "avançado"
+  },
+  {
+    "id": 12,
+    "block": "B",
+    "blockLabel": "Situações do Cotidiano Docente",
+    "type": "standard",
+    "text": "Uma docente aplica uma prova teórica sobre normas de segurança do trabalho. Ela afirma: 'Quem tirar 8 ou mais demonstra competência em segurança.' Essa afirmação está correta?",
+    "options": [
+      { "id": "12a", "text": "Sim — notas altas indicam domínio, que é o mesmo que competência.", "isCorrect": false },
+      { "id": "12b", "text": "Sim — se o conteúdo da prova é profissional, a nota avalia competência.", "isCorrect": false },
+      { "id": "12c", "text": "Não — uma prova teórica isolada avalia conhecimento, não Competência.", "isCorrect": true },
+      { "id": "12d", "text": "Não — provas não são instrumentos válidos na MSEP.", "isCorrect": false }
+    ],
+    "explanation": "Competência é demonstrada em situações reais (ou simuladas) de trabalho, com mobilização integrada de conhecimentos, habilidades e atitudes. Uma prova teórica avalia o componente 'conhecimento' — importante, mas insuficiente. A avaliação de Competência na MSEP requer evidências práticas e contextualizadas.",
+    "conceptHighlight": "Competência",
+    "capabilityCategory": null,
+    "difficulty": "avançado"
+  },
+  {
+    "id": 13,
+    "block": "C",
+    "blockLabel": "Fundamentos da MSEP",
+    "type": "standard",
+    "text": "Qual é a relação correta entre Capacidades e Competências na Metodologia SENAI de Educação Profissional?",
+    "options": [
+      { "id": "13a", "text": "Capacidades e Competências são sinônimos na MSEP.", "isCorrect": false },
+      { "id": "13b", "text": "Competências são desenvolvidas na formação; capacidades são demonstradas no trabalho.", "isCorrect": false },
+      { "id": "13c", "text": "Capacidades são desenvolvidas na formação para que o estudante demonstre Competências no trabalho.", "isCorrect": true },
+      { "id": "13d", "text": "Capacidades substituem Competências no currículo SENAI.", "isCorrect": false }
+    ],
+    "explanation": "A relação é de meio e fim: Capacidades são os elementos que o docente desenvolve durante a formação (meios); Competências são os resultados esperados no mundo do trabalho (fins). O Perfil Profissional define as Competências, e o Plano de Curso define as Capacidades necessárias para alcançá-las.",
+    "conceptHighlight": "Ambos",
+    "capabilityCategory": null,
+    "difficulty": "básico"
+  },
+  {
+    "id": 14,
+    "block": "C",
+    "blockLabel": "Fundamentos da MSEP",
+    "type": "standard",
+    "text": "Quais são as quatro categorias de Capacidades reconhecidas pela MSEP?",
+    "options": [
+      { "id": "14a", "text": "Cognitivas, Procedimentais, Atitudinais e Metacognitivas.", "isCorrect": false },
+      { "id": "14b", "text": "Técnicas, Sociais, Organizativas e Metodológicas.", "isCorrect": true },
+      { "id": "14c", "text": "Teóricas, Práticas, Comportamentais e Instrumentais.", "isCorrect": false },
+      { "id": "14d", "text": "Hard Skills, Soft Skills, Digital Skills e Leadership Skills.", "isCorrect": false }
+    ],
+    "explanation": "A MSEP organiza as Capacidades em quatro categorias: Técnicas (domínio de conteúdos e procedimentos da ocupação), Sociais (relacionamento interpessoal e comunicação), Organizativas (gestão do trabalho, segurança e qualidade) e Metodológicas (ferramentas de autodesenvolvimento para lidar com situações novas).",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": null,
+    "difficulty": "básico"
+  },
+  {
+    "id": 15,
+    "block": "C",
+    "blockLabel": "Fundamentos da MSEP",
+    "type": "standard",
+    "text": "O que diferencia uma Competência de um simples conjunto de habilidades técnicas?",
+    "options": [
+      { "id": "15a", "text": "A quantidade de habilidades dominadas — quanto mais, mais competente.", "isCorrect": false },
+      { "id": "15b", "text": "O tempo de experiência profissional do trabalhador.", "isCorrect": false },
+      { "id": "15c", "text": "A mobilização integrada de conhecimentos, habilidades e atitudes em situações reais ou simuladas de trabalho.", "isCorrect": true },
+      { "id": "15d", "text": "A certificação formal obtida ao final do curso.", "isCorrect": false }
+    ],
+    "explanation": "Competência não é apenas acúmulo de habilidades — é a capacidade de mobilizá-las de forma integrada, contextualizada e autônoma para resolver situações reais do trabalho. O diferencial está na integração (CHA: Conhecimentos, Habilidades e Atitudes) aplicada em contexto profissional real ou simulado.",
+    "conceptHighlight": "Competência",
+    "capabilityCategory": null,
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 16,
+    "block": "C",
+    "blockLabel": "Fundamentos da MSEP",
+    "type": "standard",
+    "text": "'Elaborar relatórios técnicos de acordo com padrões organizacionais.' Em qual categoria de Capacidade da MSEP essa ação se enquadra?",
+    "options": [
+      { "id": "16a", "text": "Capacidade Social", "isCorrect": false },
+      { "id": "16b", "text": "Capacidade Organizativa", "isCorrect": false },
+      { "id": "16c", "text": "Capacidade Técnica", "isCorrect": true },
+      { "id": "16d", "text": "Capacidade Metodológica", "isCorrect": false }
+    ],
+    "explanation": "Elaborar relatórios técnicos é uma ação que requer domínio de conteúdos, linguagem e procedimentos específicos de uma área profissional — características de Capacidade Técnica. Se a ação envolvesse planejamento autônomo diante de situações novas, seria Metodológica. Se fosse sobre comunicação interpessoal, seria Social.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Técnica",
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 17,
+    "block": "C",
+    "blockLabel": "Fundamentos da MSEP",
+    "type": "standard",
+    "text": "'Desenvolver soluções para problemas encontrados nos processos produtivos.' Esse enunciado representa:",
+    "options": [
+      { "id": "17a", "text": "Capacidade Técnica", "isCorrect": false },
+      { "id": "17b", "text": "Capacidade Metodológica", "isCorrect": false },
+      { "id": "17c", "text": "Competência Profissional", "isCorrect": true },
+      { "id": "17d", "text": "Objetivo de aula", "isCorrect": false }
+    ],
+    "explanation": "'Desenvolver soluções para problemas em processos produtivos' reflete atuação profissional integrada: análise de contexto, diagnóstico, criatividade e implementação de soluções. Envolve mobilização simultânea de múltiplas capacidades diante de situações reais — o que caracteriza Competência Profissional.",
+    "conceptHighlight": "Competência",
+    "capabilityCategory": null,
+    "difficulty": "intermediário"
+  },
+  {
+    "id": 18,
+    "block": "C",
+    "blockLabel": "Fundamentos da MSEP",
+    "type": "standard",
+    "text": "Um aluno que sabe utilizar Excel com fluência necessariamente demonstra Competência Profissional em análise de dados?",
+    "options": [
+      { "id": "18a", "text": "Sim — dominar uma ferramenta profissional já é uma competência.", "isCorrect": false },
+      { "id": "18b", "text": "Sim — se o Excel é usado no mercado de trabalho, seu domínio equivale à competência.", "isCorrect": false },
+      { "id": "18c", "text": "Não — o domínio de uma ferramenta é uma Capacidade; a Competência exige mobilização integrada em situação real.", "isCorrect": true },
+      { "id": "18d", "text": "Não — Excel não é considerado uma ferramenta profissional pela MSEP.", "isCorrect": false }
+    ],
+    "explanation": "Esta é a reflexão final da atividade original: saber usar Excel é uma Capacidade (Técnica). A Competência profissional acontece quando o estudante mobiliza esse conhecimento junto com outras capacidades — análise crítica, tomada de decisão, comunicação — para resolver situações reais do trabalho e entregar resultados. A ferramenta é apenas um meio.",
+    "conceptHighlight": "Capacidade",
+    "capabilityCategory": "Técnica",
+    "difficulty": "avançado"
+  }
+]
