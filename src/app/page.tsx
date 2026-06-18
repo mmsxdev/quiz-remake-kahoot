@@ -254,14 +254,14 @@ function WelcomeForm() {
       <motion.div className="mb-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-3"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
         {[
-          { icon: BookOpen, label: '18 questões', desc: 'Autoformação docente', color: 'blue' },
-          { icon: Zap, label: 'Ranking em tempo real', desc: 'Competição amigável estilo Kahoot', color: 'violet' },
-          { icon: Trophy, label: 'Bônus de velocidade', desc: 'Responda rápido para pontuar mais', color: 'amber' },
+          { icon: BookOpen, label: '18 questões', desc: 'Autoformação docente', colorClass: 'text-blue-600 dark:text-blue-400' },
+          { icon: Zap, label: 'Ranking em tempo real', desc: 'Competição amigável estilo Kahoot', colorClass: 'text-violet-600 dark:text-violet-400' },
+          { icon: Trophy, label: 'Bônus de velocidade', desc: 'Responda rápido para pontuar mais', colorClass: 'text-amber-600 dark:text-amber-400' },
         ].map((item, i) => (
           <motion.div key={item.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.08 }}>
             <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
               <CardContent className="flex flex-col items-center p-5 text-center">
-                <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-${item.color}-600 dark:text-${item.color}-400 transition-colors duration-300`}>
+                <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 ${item.colorClass} transition-colors duration-300`}>
                   <item.icon className="h-5 w-5" />
                 </div>
                 <p className="font-semibold text-slate-800 dark:text-white text-sm">{item.label}</p>
@@ -339,7 +339,7 @@ function WelcomeForm() {
                   onChange={(e) => { setNameInput(e.target.value); setNameError('') }}
                   placeholder="Ex: Prof. Carlos Silva"
                   maxLength={40}
-                  className="w-full rounded-lg border border-slate-250 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/80 px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/80 px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 />
                 {nameError && <p className="mt-1.5 text-xs text-red-400">{nameError}</p>}
               </div>
@@ -358,9 +358,9 @@ function WelcomeForm() {
                     onChange={(e) => { setCodeInput(e.target.value.toUpperCase()); setCodeError('') }}
                     placeholder="Ex: SENAI1"
                     maxLength={8}
-                    className="w-full rounded-lg border border-slate-250 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/80 pl-4 pr-10 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-mono tracking-widest uppercase"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/80 pl-4 pr-10 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-mono tracking-widest uppercase"
                   />
-                  <div className="absolute right-3 top-3.5 text-slate-450 dark:text-slate-500">
+                  <div className="absolute right-3 top-3.5 text-slate-400 dark:text-slate-500">
                     <Key className="h-4 w-4" />
                   </div>
                 </div>
@@ -413,7 +413,7 @@ function WelcomeForm() {
       </AnimatePresence>
 
       {/* Rodapé informativo */}
-      <motion.p className="mt-12 text-center text-[10px] text-slate-650 uppercase tracking-widest font-mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
+      <motion.p className="mt-12 text-center text-[10px] text-slate-600 uppercase tracking-widest font-mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
         Metodologia SENAI de Educação Profissional • MSEP
       </motion.p>
     </div>
@@ -436,7 +436,7 @@ export default function WelcomePage() {
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
-          className="text-slate-500 hover:text-slate-755 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full shadow-sm"
+          className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full shadow-sm"
           title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
         >
           {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-500" /> : <Moon className="h-5 w-5 text-blue-600" />}

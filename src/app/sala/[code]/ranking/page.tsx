@@ -361,7 +361,7 @@ export default function RankingSalaPage() {
                 Apresentador
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-500 font-medium">
-                Sala: <strong className="text-slate-700 dark:text-slate-350">{session.code}</strong>
+                Sala: <strong className="text-slate-700 dark:text-slate-300">{session.code}</strong>
               </span>
             </div>
             <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-[280px] sm:max-w-md">{session.title}</h1>
@@ -374,7 +374,7 @@ export default function RankingSalaPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setPlaying(!playing)}
-                className="h-8 w-8 text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-850/40 rounded-full"
+                className="h-8 w-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full"
                 title={playing ? 'Pausar música' : 'Tocar música'}
               >
                 {playing ? <Volume2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-pulse" /> : <VolumeX className="h-4 w-4" />}
@@ -396,7 +396,7 @@ export default function RankingSalaPage() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="h-8 w-8 text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-850/40 rounded-full"
+              className="h-8 w-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full"
               title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
             >
               {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4 text-blue-600" />}
@@ -480,7 +480,7 @@ export default function RankingSalaPage() {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-20 border border-dashed border-slate-800 rounded-2xl bg-slate-900/10">
-                    <Users className="h-10 w-10 text-slate-650 animate-pulse mb-3" />
+                    <Users className="h-10 w-10 text-slate-500 animate-pulse mb-3" />
                     <p className="text-base text-slate-400 font-medium">Aguardando participantes entrarem...</p>
                     <p className="text-xs text-slate-600 mt-1">Insira seu nome e código para aparecer aqui.</p>
                   </div>
@@ -522,8 +522,8 @@ export default function RankingSalaPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="relative flex items-center justify-center h-40 w-40 rounded-full border-4 border-dashed border-slate-850 bg-slate-950">
-                    <div className="text-center text-slate-600">
+                  <div className="relative flex items-center justify-center h-40 w-40 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                    <div className="text-center text-slate-500 dark:text-slate-400">
                       <span className="text-4xl">⏳</span>
                       <p className="text-[9px] uppercase font-bold tracking-wider mt-1">Tempo Livre</p>
                     </div>
@@ -566,7 +566,7 @@ export default function RankingSalaPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <h3 className="text-center font-bold text-lg text-slate-350">Respostas Submetidas</h3>
+                      <h3 className="text-center font-bold text-lg text-slate-700 dark:text-slate-300">Respostas Submetidas</h3>
                       
                       <div className="space-y-4">
                         {(activeQuestion.type === 'two-phase' ? activeQuestion.phase2?.options ?? [] : activeQuestion.options).map((opt, i) => {
@@ -588,7 +588,7 @@ export default function RankingSalaPage() {
                                 </span>
                                 <span className="font-mono text-slate-400">{votes} votos ({pct}%)</span>
                               </div>
-                              <div className="h-3 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-850">
+                              <div className="h-3 w-full bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                                 <motion.div
                                   initial={{ width: 0 }}
                                   animate={{ width: `${pct}%` }}
@@ -742,7 +742,7 @@ export default function RankingSalaPage() {
                   if (isSecond) {
                     rankLabel = '2º'
                     height = 'h-40'
-                    colorClass = 'bg-gradient-to-t from-slate-900 to-slate-350/20 border-slate-300/30'
+                    colorClass = 'bg-gradient-to-t from-slate-900 to-slate-300/20 border-slate-300/30'
                     textClass = 'text-slate-300'
                     delay = 0.2
                   } else if (isThird) {
@@ -803,7 +803,7 @@ export default function RankingSalaPage() {
                             <th className="px-6 py-4 text-center">Aproveitamento</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-850">
+                        <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                           {players.map((p, idx) => {
                             const pct = p.total_questions > 0 ? Math.round((p.correct_answers / p.total_questions) * 100) : 0
                             const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : null
@@ -825,7 +825,7 @@ export default function RankingSalaPage() {
                                 <td className="px-6 py-4 text-center font-mono font-bold text-blue-400">
                                   {p.score.toLocaleString()}
                                 </td>
-                                <td className="px-6 py-4 text-center text-slate-350">
+                                <td className="px-6 py-4 text-center text-slate-600 dark:text-slate-300">
                                   {p.correct_answers}/{p.total_questions}
                                 </td>
                                 <td className="px-6 py-4 text-center">

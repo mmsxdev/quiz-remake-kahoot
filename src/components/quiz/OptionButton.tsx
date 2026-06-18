@@ -52,7 +52,7 @@ export function OptionButton({ option, index, isSelected, hasAnswered, onSelect 
       <span
         className={cn(
           'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold transition-colors',
-          !hasAnswered && !isSelected && 'bg-slate-100 text-slate-550 dark:bg-slate-700 dark:text-slate-400 group-hover:bg-blue-500/20 group-hover:text-blue-600 dark:group-hover:bg-blue-500/30 dark:group-hover:text-blue-300',
+          !hasAnswered && !isSelected && 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400 group-hover:bg-blue-500/20 group-hover:text-blue-600 dark:group-hover:bg-blue-500/30 dark:group-hover:text-blue-300',
           !hasAnswered && isSelected && 'bg-blue-500 text-white',
           showCorrect && 'bg-emerald-500 text-white',
           showWrong && 'bg-red-500 text-white',

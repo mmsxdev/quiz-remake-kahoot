@@ -113,7 +113,7 @@ export default function ResultadoPage() {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="text-slate-500 hover:text-slate-755 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full shadow-sm"
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full shadow-sm"
             title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
           >
             {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-500" /> : <Moon className="h-5 w-5 text-blue-600" />}
@@ -123,15 +123,15 @@ export default function ResultadoPage() {
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-16">
           {/* Score hero */}
           <motion.div className="mb-8 text-center" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <div className="mb-4 inline-flex h-24 w-24 items-center justify-center rounded-full border border-slate-700/50 bg-slate-800/50 text-5xl backdrop-blur-sm">
+            <div className="mb-4 inline-flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50 text-5xl backdrop-blur-sm">
               {config.emoji}
             </div>
 
-            <h1 className="font-display mb-1 text-5xl font-bold text-white md:text-6xl">
+            <h1 className="font-display mb-1 text-5xl font-bold text-slate-800 dark:text-white md:text-6xl">
               {state.totalScore.toLocaleString()}
             </h1>
-            <p className="mb-2 text-slate-400">pontos totais</p>
-            <p className="mb-4 text-xl text-slate-300">
+            <p className="mb-2 text-slate-500 dark:text-slate-400">pontos totais</p>
+            <p className="mb-4 text-xl text-slate-700 dark:text-slate-300">
               {totalCorrect}/{totalQuestions} acertos ({percentage}%)
             </p>
 
@@ -148,27 +148,27 @@ export default function ResultadoPage() {
           </motion.div>
 
           {/* Score breakdown */}
-          <motion.div className="mb-6 rounded-xl border border-slate-700/40 bg-slate-800/40 p-5 backdrop-blur-sm"
+          <motion.div className="mb-6 rounded-xl border border-slate-200 dark:border-slate-700/40 bg-white dark:bg-slate-800/40 p-5 backdrop-blur-sm"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-400">
+            <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               <Star className="h-4 w-4" /> Composição da Pontuação
             </p>
             <div className="space-y-2">
               {[
-                { label: 'Respostas corretas (base)', value: baseTotal, icon: '✅', color: 'text-white' },
-                { label: 'Bônus de velocidade', value: speedTotal, icon: '⚡', color: 'text-emerald-400' },
-                { label: 'Bônus de sequência', value: streakTotal, icon: '🔥', color: 'text-orange-400' },
-                { label: 'Conquistas', value: achievementTotal, icon: '🏆', color: 'text-amber-400' },
+                { label: 'Respostas corretas (base)', value: baseTotal, icon: '✅', color: 'text-slate-800 dark:text-white' },
+                { label: 'Bônus de velocidade', value: speedTotal, icon: '⚡', color: 'text-emerald-600 dark:text-emerald-400' },
+                { label: 'Bônus de sequência', value: streakTotal, icon: '🔥', color: 'text-orange-600 dark:text-orange-400' },
+                { label: 'Conquistas', value: achievementTotal, icon: '🏆', color: 'text-amber-600 dark:text-amber-400' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">{item.icon} {item.label}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{item.icon} {item.label}</span>
                   <span className={`font-bold ${item.color}`}>+{item.value.toLocaleString()}</span>
                 </div>
               ))}
-              <div className="my-2 border-t border-slate-700" />
+              <div className="my-2 border-t border-slate-200 dark:border-slate-700" />
               <div className="flex items-center justify-between text-sm font-bold">
-                <span className="text-slate-200">Total</span>
-                <span className="text-blue-300">{state.totalScore.toLocaleString()} pts</span>
+                <span className="text-slate-700 dark:text-slate-200">Total</span>
+                <span className="text-blue-600 dark:text-blue-300">{state.totalScore.toLocaleString()} pts</span>
               </div>
             </div>
           </motion.div>
@@ -179,19 +179,19 @@ export default function ResultadoPage() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
               {state.maxStreak >= 3 && (
                 <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-4">
-                  <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-orange-300">
+                  <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-orange-400 dark:text-orange-300">
                     <Flame className="h-4 w-4" /> Melhor sequência
                   </p>
-                  <p className="text-2xl font-bold text-white">{state.maxStreak}x consecutivos</p>
+                  <p className="text-2xl font-bold text-slate-800 dark:text-white">{state.maxStreak}x consecutivos</p>
                 </div>
               )}
               {state.unlockedAchievements.length > 0 && (
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-                  <p className="mb-2 text-sm font-semibold text-amber-300">🏆 Conquistas</p>
+                  <p className="mb-2 text-sm font-semibold text-amber-400 dark:text-amber-300">🏆 Conquistas</p>
                   <div className="flex flex-wrap gap-2">
                     {state.unlockedAchievements.map((id) => (
                       <span key={id} title={ACHIEVEMENTS[id]?.description}
-                        className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-200">
+                        className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-600 dark:text-amber-200">
                         {ACHIEVEMENTS[id]?.emoji} {ACHIEVEMENTS[id]?.label}
                       </span>
                     ))}
@@ -202,18 +202,18 @@ export default function ResultadoPage() {
           )}
 
           {/* Diagnóstico */}
-          <motion.div className="mb-6 rounded-xl border border-slate-700/40 bg-slate-800/40 p-6 backdrop-blur-sm"
+          <motion.div className="mb-6 rounded-xl border border-slate-200 dark:border-slate-700/40 bg-white dark:bg-slate-800/40 p-6 backdrop-blur-sm"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <div className="mb-3 flex items-center gap-2 text-slate-400">
+            <div className="mb-3 flex items-center gap-2 text-slate-500 dark:text-slate-400">
               <Lightbulb className="h-4 w-4" />
               <span className="text-sm font-semibold uppercase tracking-wider">Diagnóstico pedagógico</span>
             </div>
-            <p className="leading-relaxed text-slate-300">{config.message}</p>
+            <p className="leading-relaxed text-slate-700 dark:text-slate-300">{config.message}</p>
           </motion.div>
 
           {/* Desempenho por bloco */}
           <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <div className="mb-4 flex items-center gap-2 text-slate-400">
+            <div className="mb-4 flex items-center gap-2 text-slate-500 dark:text-slate-400">
               <TrendingUp className="h-4 w-4" />
               <span className="text-sm font-semibold uppercase tracking-wider">Desempenho por bloco</span>
             </div>
@@ -222,10 +222,10 @@ export default function ResultadoPage() {
 
           {/* Classificação Completa da Sala (apenas leitura para o jogador) */}
           {isRoomMode && roomRanking.length > 0 && (
-            <motion.div className="mb-6 rounded-xl border border-slate-700/40 bg-slate-800/40 p-5 backdrop-blur-sm"
+            <motion.div className="mb-6 rounded-xl border border-slate-200 dark:border-slate-700/40 bg-white dark:bg-slate-800/40 p-5 backdrop-blur-sm"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-              <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-400">
-                <Trophy className="h-4 w-4 text-amber-400" /> Classificação Geral da Sala
+              <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <Trophy className="h-4 w-4 text-amber-500" /> Classificação Geral da Sala
               </p>
               
               {loadingRoom ? (
@@ -234,31 +234,31 @@ export default function ResultadoPage() {
                 <div className="overflow-x-auto max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
                   <table className="w-full text-left border-collapse text-xs sm:text-sm">
                     <thead>
-                      <tr className="border-b border-slate-700 bg-slate-950/40 text-slate-450 font-bold uppercase tracking-wider">
+                      <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/40 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                         <th className="py-2.5 px-3 w-16 text-center">Posição</th>
                         <th className="py-2.5 px-3">Nome</th>
                         <th className="py-2.5 px-3 text-center">Pontos</th>
                         <th className="py-2.5 px-3 text-center">Acertos</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                       {roomRanking.map((p, idx) => {
                         const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : null
                         const isMe = p.id === state.playerId
                         return (
-                          <tr key={p.id} className={`transition-colors ${isMe ? 'bg-blue-500/10 hover:bg-blue-500/15' : 'hover:bg-slate-800/20'}`}>
-                            <td className="py-2.5 px-3 text-center font-black text-slate-350">
+                          <tr key={p.id} className={`transition-colors ${isMe ? 'bg-blue-500/10 hover:bg-blue-500/15' : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/20'}`}>
+                            <td className="py-2.5 px-3 text-center font-black text-slate-500 dark:text-slate-300">
                               {medal || `${idx + 1}º`}
                             </td>
                             <td className="py-2.5 px-3">
-                              <span className={`font-semibold ${isMe ? 'text-blue-300 font-bold' : 'text-slate-300'}`}>
+                              <span className={`font-semibold ${isMe ? 'text-blue-600 dark:text-blue-300 font-bold' : 'text-slate-800 dark:text-slate-300'}`}>
                                 {p.name} {isMe && ' (Você)'}
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 text-center font-mono font-bold text-blue-400">
+                            <td className="py-2.5 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
                               {p.score.toLocaleString()}
                             </td>
-                            <td className="py-2.5 px-3 text-center text-slate-400">
+                            <td className="py-2.5 px-3 text-center text-slate-500 dark:text-slate-400">
                               {p.correct_answers}/{p.total_questions}
                             </td>
                           </tr>
@@ -272,12 +272,12 @@ export default function ResultadoPage() {
           )}
 
           {/* Mensagem-chave */}
-          <motion.div className="my-8 rounded-xl border border-blue-500/20 bg-blue-500/5 p-6"
+          <motion.div className="my-8 rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/50 dark:bg-blue-500/5 p-6"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-            <p className="mb-3 text-sm font-semibold text-blue-400">💡 Mensagem-chave da MSEP</p>
-            <div className="space-y-2 text-sm text-slate-300">
+            <p className="mb-3 text-sm font-semibold text-blue-600 dark:text-blue-400">💡 Mensagem-chave da MSEP</p>
+            <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
               <p>📘 <strong>Capacidade</strong> é aquilo que o aluno <em>desenvolve durante a formação</em>.</p>
-              <p>🎯 <strong>Competência</strong> é aquilo que o profissional <em>demonstra ao atuar em situações reais de trabalho</em>.</p>
+              <p>🎯 <strong>Competência</strong> é aquilo que o professional <em>demonstra ao atuar em situações reais de trabalho</em>.</p>
               <p>✅ Na MSEP, o foco do docente é <em>desenvolver capacidades</em> para que o estudante alcance as <em>competências previstas no Perfil Profissional</em>.</p>
             </div>
           </motion.div>
@@ -288,7 +288,7 @@ export default function ResultadoPage() {
             <Button
               onClick={() => window.print()}
               size="lg"
-              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-650 py-6 text-lg font-semibold hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 py-6 text-lg font-semibold hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
             >
               📄 Salvar PDF do Resultado
             </Button>
@@ -300,13 +300,13 @@ export default function ResultadoPage() {
               }}
               size="lg"
               variant="outline"
-              className="flex-1 py-6 text-lg font-semibold border-slate-800 text-slate-300 hover:bg-slate-900"
+              className="flex-1 py-6 text-lg font-semibold border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
             >
               <Home className="mr-2 h-5 w-5" /> Tela inicial
             </Button>
           </motion.div>
    
-          <motion.p className="mt-6 text-center text-xs text-slate-650" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
+          <motion.p className="mt-6 text-center text-xs text-slate-500" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
             {isRoomMode
               ? `Sua pontuação foi salva na sala ${state.sessionCode}. Você completou sua tentativa.`
               : 'Sua pontuação foi salva no ranking local. Você completou sua tentativa.'}
@@ -360,7 +360,7 @@ export default function ResultadoPage() {
           <h2 className="text-xs font-bold uppercase text-slate-700 border-b border-slate-200 pb-1.5 mb-2">
             Diagnóstico Pedagógico
           </h2>
-          <p className="text-sm text-slate-650 leading-relaxed italic">{config.message}</p>
+          <p className="text-sm text-slate-600 leading-relaxed italic">{config.message}</p>
         </div>
 
         <div className="mb-6">
@@ -404,7 +404,7 @@ export default function ResultadoPage() {
           </div>
         </div>
 
-        <div className="mt-16 text-center text-[8px] text-slate-450 uppercase tracking-widest border-t border-slate-200 pt-4">
+        <div className="mt-16 text-center text-[8px] text-slate-400 uppercase tracking-widest border-t border-slate-200 pt-4">
           Emitido de forma segura pelo QuizDida • Portal de Formação Continuada SENAI
         </div>
       </div>
