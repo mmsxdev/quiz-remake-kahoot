@@ -118,3 +118,14 @@
 .font-display {
   font-family: var(--font-display);
 }
+
+/* ── Print Styles (PDF Generation) ──────────── */
+@media print {
+  body, html {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-family: var(--font-sans) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

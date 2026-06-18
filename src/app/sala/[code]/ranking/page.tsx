@@ -191,11 +191,40 @@ export default function RankingSalaPage() {
     }
   }
 
+  function exportToCSV() {
+    if (!session || players.length === 0) return
+    
+    const csvRows = [
+      `Relatório do Quiz — ${session.title}`,
+      `Código da Sala: ${session.code}`,
+      `Data de Encerramento: ${new Date().toLocaleString('pt-BR')}`,
+      `Total de Participantes: ${players.length}`,
+      '',
+      'Classificação,Nome,Pontuação Total,Acertos,Total de Questões,Aproveitamento (%)'
+    ]
+
+    players.forEach((p, idx) => {
+      const pct = p.total_questions > 0 ? Math.round((p.correct_answers / p.total_questions) * 100) : 0
+      csvRows.push(`${idx + 1},"${p.name.replace(/"/g, '""')}",${p.score},${p.correct_answers},${p.total_questions},${pct}%`)
+    })
+
+    const csvContent = '\uFEFF' + csvRows.join('\r\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `relatorio_quiz_${session.code}_${session.title.toLowerCase().replace(/\s+/g, '_')}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   async function handleCloseSession() {
     if (!session) return
-    if (!confirm('Tem certeza que deseja encerrar permanentemente esta sessão?')) return
+    if (!confirm('Tem certeza que deseja encerrar permanentemente esta sessão e baixar o relatório?')) return
 
     try {
+      exportToCSV()
       await closeSession(session.id)
       router.push('/')
     } catch (err: any) {
@@ -694,9 +723,71 @@ export default function RankingSalaPage() {
                 })}
               </div>
 
+              {/* Tabela de Classificação Completa */}
+              <div className="max-w-4xl mx-auto mt-12 space-y-4">
+                <h3 className="text-center font-bold text-lg text-slate-300 flex items-center justify-center gap-2">
+                  <Trophy className="h-5 w-5 text-amber-500" /> Classificação Geral da Sala
+                </h3>
+                <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-sm">
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-800 bg-slate-950/60 text-xs font-bold uppercase tracking-wider text-slate-400">
+                            <th className="px-6 py-4 w-20 text-center">Posição</th>
+                            <th className="px-6 py-4">Participante</th>
+                            <th className="px-6 py-4 text-center">Pontuação</th>
+                            <th className="px-6 py-4 text-center">Acertos</th>
+                            <th className="px-6 py-4 text-center">Aproveitamento</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-850">
+                          {players.map((p, idx) => {
+                            const pct = p.total_questions > 0 ? Math.round((p.correct_answers / p.total_questions) * 100) : 0
+                            const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : null
+                            return (
+                              <tr key={p.id} className="hover:bg-slate-900/30 transition-colors">
+                                <td className="px-6 py-4 text-center font-black text-slate-300">
+                                  {medal || `${idx + 1}º`}
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold text-slate-200">{p.name}</span>
+                                    {p.max_streak >= 3 && (
+                                      <span className="rounded bg-orange-500/10 border border-orange-500/20 px-1 py-0.5 text-[9px] font-bold text-orange-400">
+                                        🔥 {p.max_streak}x
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-center font-mono font-bold text-blue-400">
+                                  {p.score.toLocaleString()}
+                                </td>
+                                <td className="px-6 py-4 text-center text-slate-350">
+                                  {p.correct_answers}/{p.total_questions}
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                    pct >= 70 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                    pct >= 50 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                                    'bg-red-500/10 text-red-400 border border-red-500/20'
+                                  }`}>
+                                    {pct}%
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
               <div className="flex justify-center gap-4 pt-6">
-                <Button onClick={() => router.push('/')} variant="outline" className="border-slate-800 text-slate-300 hover:bg-slate-900 py-6 px-8">
-                  Voltar para o Início
+                <Button onClick={handleCloseSession} className="bg-red-600 hover:bg-red-700 text-white font-bold py-6 px-10 shadow-lg text-lg">
+                  Encerrar Sala e Baixar Relatório (CSV)
                 </Button>
               </div>
             </motion.div>
