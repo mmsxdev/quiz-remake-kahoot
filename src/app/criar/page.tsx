@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Play, Copy, Check, ExternalLink, QrCode, Hourglass, Settings, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Play, Copy, Check, ExternalLink, QrCode, Hourglass, Settings, AlertCircle, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { createSession } from '@/lib/supabase-helpers'
 import { isSupabaseEnabled } from '@/lib/supabase'
+import { useTheme } from '@/lib/theme'
 
 export default function CriarSessaoPage() {
   const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
   const [title, setTitle] = useState('')
   const [timerEnabled, setTimerEnabled] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -66,26 +68,40 @@ export default function CriarSessaoPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans">
+    <main className="relative min-h-screen overflow-hidden bg-background text-foreground transition-colors duration-300 font-sans">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-blue-600/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-indigo-600/10 blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-blue-600/5 dark:bg-blue-600/10 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-indigo-600/5 dark:bg-indigo-600/10 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-16">
         
-        {/* Botão de Voltar (se não criou ainda) */}
-        {!createdSession && (
-          <motion.button
-            onClick={() => router.push('/')}
-            className="mb-8 flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-slate-200"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+        {/* Header/Topo com Botão de Voltar e Alternador de Tema */}
+        <div className="flex items-center justify-between mb-8">
+          {!createdSession ? (
+            <motion.button
+              onClick={() => router.push('/')}
+              className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-755 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <ArrowLeft className="h-4 w-4" /> Voltar para a tela inicial
+            </motion.button>
+          ) : (
+            <div />
+          )}
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-slate-500 hover:text-slate-755 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full"
+            title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
           >
-            <ArrowLeft className="h-4 w-4" /> Voltar para a tela inicial
-          </motion.button>
-        )}
+            {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4 text-blue-600" />}
+          </Button>
+        </div>
 
         <AnimatePresence mode="wait">
           {!createdSession ? (

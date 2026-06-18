@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${outfit.variable} dark`}>
       <body className="min-h-screen bg-background font-sans antialiased">
         <QuizProvider>{children}</QuizProvider>
       </body>

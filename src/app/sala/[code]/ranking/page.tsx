@@ -3,13 +3,14 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Users, CheckCircle, Flame, Star, AlertCircle, ShieldAlert, Ban, QrCode, Home, Play, ArrowRight, Check, Eye } from 'lucide-react'
+import { Trophy, Users, CheckCircle, Flame, Star, AlertCircle, ShieldAlert, Ban, QrCode, Home, Play, ArrowRight, Check, Eye, Volume2, VolumeX, Music, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/lib/supabase'
 import { getSessionByCode, getSessionRanking, closeSession, updateSessionStatus, type DbPlayer, type DbSession } from '@/lib/supabase-helpers'
 import { ACHIEVEMENTS, SCORE_CONFIG } from '@/lib/scoring'
+import { useTheme } from '@/lib/theme'
 import questionsData from '@/data/questions.json'
 import type { Question, Option, Phase2Option } from '@/lib/types'
 
@@ -19,12 +20,18 @@ export default function RankingSalaPage() {
   const params = useParams()
   const router = useRouter()
   const code = typeof params?.code === 'string' ? params.code : ''
+  const { theme, toggleTheme } = useTheme()
 
   // Banco de dados
   const [session, setSession] = useState<DbSession | null>(null)
   const [players, setPlayers] = useState<DbPlayer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Audio e Trilha Sonora
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [playing, setPlaying] = useState(false)
+  const [maxVolume, setMaxVolume] = useState(0.25)
 
   // Estados locais da apresentação
   const [timeLeft, setTimeLeft] = useState(30)
@@ -151,6 +158,27 @@ export default function RankingSalaPage() {
   useEffect(() => {
     setRevealed(false)
   }, [session?.current_question_index, session?.status])
+
+  // ── Controle do Player de Áudio ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!audioRef.current) return
+    if (playing) {
+      audioRef.current.play().catch((err) => {
+        console.log('Autoplay bloqueado. Aguardando clique do usuário.', err)
+        setPlaying(false)
+      })
+    } else {
+      audioRef.current.pause()
+    }
+  }, [playing])
+
+  // Lógica de volume dinâmico proporcional
+  useEffect(() => {
+    if (!audioRef.current) return
+    const isExplaining = session?.status === 'question' && revealed
+    const targetVolume = isExplaining ? maxVolume * 0.15 : maxVolume
+    audioRef.current.volume = targetVolume
+  }, [session?.status, revealed, maxVolume])
 
   // 4. Ações do Apresentador (Host)
   async function handleStartQuiz() {
@@ -317,34 +345,68 @@ export default function RankingSalaPage() {
   }
 
   return (
-    <main className="relative min-h-screen bg-slate-950 font-sans text-white overflow-x-hidden flex flex-col justify-between">
+    <main className="relative min-h-screen bg-background font-sans text-foreground overflow-x-hidden flex flex-col justify-between transition-colors duration-300">
       {/* Background decorativo sutil */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-1/4 h-[500px] w-[500px] rounded-full bg-blue-600/5 blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 h-[500px] w-[500px] rounded-full bg-violet-600/5 blur-3xl" />
+        <div className="absolute top-0 right-1/4 h-[500px] w-[500px] rounded-full bg-blue-600/5 dark:bg-blue-600/5 blur-3xl" />
+        <div className="absolute bottom-0 left-1/4 h-[500px] w-[500px] rounded-full bg-violet-600/5 dark:bg-violet-600/5 blur-3xl" />
       </div>
 
       {/* Top Bar do Host (Sempre visível) */}
-      <header className="relative z-20 border-b border-slate-800/80 bg-slate-900/30 px-6 py-4 backdrop-blur-sm">
+      <header className="relative z-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-100/30 dark:bg-slate-900/30 px-6 py-4 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="rounded bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 text-[10px] font-bold text-blue-300">
+              <span className="rounded bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-300">
                 Apresentador
               </span>
-              <span className="text-xs text-slate-500 font-medium">
-                Sala: <strong className="text-slate-350">{session.code}</strong>
+              <span className="text-xs text-slate-500 dark:text-slate-500 font-medium">
+                Sala: <strong className="text-slate-700 dark:text-slate-350">{session.code}</strong>
               </span>
             </div>
-            <h1 className="text-lg font-bold text-white truncate max-w-[280px] sm:max-w-md">{session.title}</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-[280px] sm:max-w-md">{session.title}</h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-slate-400 text-sm">
-              <Users className="h-4 w-4 text-blue-400" />
+            {/* Controles de Música */}
+            <div className="flex items-center gap-2 border-r border-slate-200 dark:border-slate-800 pr-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPlaying(!playing)}
+                className="h-8 w-8 text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-850/40 rounded-full"
+                title={playing ? 'Pausar música' : 'Tocar música'}
+              >
+                {playing ? <Volume2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-pulse" /> : <VolumeX className="h-4 w-4" />}
+              </Button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={maxVolume}
+                onChange={(e) => setMaxVolume(parseFloat(e.target.value))}
+                className="w-16 h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                title="Volume da música"
+              />
+            </div>
+
+            {/* Alternador de Tema */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="h-8 w-8 text-slate-500 hover:text-slate-750 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-850/40 rounded-full"
+              title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4 text-blue-600" />}
+            </Button>
+
+            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-sm">
+              <Users className="h-4 w-4 text-blue-500 dark:text-blue-400" />
               <span><strong>{players.length}</strong> conectados</span>
             </div>
-            <Button onClick={handleCloseSession} variant="ghost" size="sm" className="text-red-400 hover:text-white hover:bg-red-950/20">
+            <Button onClick={handleCloseSession} variant="ghost" size="sm" className="text-red-600 dark:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-950/20">
               Encerrar Sala
             </Button>
           </div>
@@ -797,9 +859,16 @@ export default function RankingSalaPage() {
       </div>
 
       {/* Footer do Host */}
-      <footer className="relative z-10 py-4 border-t border-slate-900/60 bg-slate-950 text-center text-[10px] text-slate-500 uppercase tracking-widest font-mono">
+      <footer className="relative z-10 py-4 border-t border-slate-200/60 dark:border-slate-900/60 bg-slate-100/50 dark:bg-slate-950 text-center text-[10px] text-slate-500 uppercase tracking-widest font-mono">
         Metodologia SENAI de Educação Profissional • MSEP
       </footer>
+
+      {/* Elemento de Áudio Oculto */}
+      <audio
+        ref={audioRef}
+        src="/audio/quiz_music.mp3"
+        loop
+      />
     </main>
   )
 }

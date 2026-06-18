@@ -235,6 +235,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
   const [player, setPlayerState] = useState<PlayerData | null>(null)
   const [ranking, setRanking] = useState<RankingEntry[]>([])
   const [lastNewAchievements, setLastNewAchievements] = useState<AchievementId[]>([])
+  const [realtimeActive, setRealtimeActive] = useState(true)
 
   // Rastreia conquistas novas para toast
   const prevAchievementsRef = useRef<AchievementId[]>([])
@@ -329,12 +330,50 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        setRealtimeActive(status === 'SUBSCRIBED')
+      })
 
     return () => {
       supabase?.removeChannel(channel)
     }
   }, [state.sessionId])
+
+  // ── Polling de fallback sob demanda (ativo apenas se Realtime falhar) ─────────
+  useEffect(() => {
+    if (!state.sessionId || realtimeActive || !supabase) return
+
+    const intervalId = setInterval(async () => {
+      try {
+        const { data, error } = await supabase!
+          .from('quiz_sessions')
+          .select('status, current_question_index')
+          .eq('id', state.sessionId)
+          .single()
+
+        if (data && !error) {
+          if (
+            data.status !== state.sessionStatus ||
+            data.current_question_index !== state.sessionQuestionIndex
+          ) {
+            dispatch({
+              type: 'UPDATE_SESSION_STATE',
+              payload: {
+                status: data.status,
+                currentQuestionIndex: data.current_question_index,
+              },
+            })
+          }
+        }
+      } catch (err) {
+        console.error('Erro no polling de sincronização da sessão:', err)
+      }
+    }, 3000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [state.sessionId, realtimeActive, state.sessionStatus, state.sessionQuestionIndex])
 
   // ── Player (modo local) ────────────────────────────────────────────────────
   const setPlayer = useCallback((p: PlayerData) => {

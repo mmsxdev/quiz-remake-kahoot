@@ -7,14 +7,16 @@ import { useQuiz } from '@/lib/quiz-context'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { QuizProgressBar } from '@/components/quiz/QuizProgressBar'
 import { AchievementToast } from '@/components/quiz/AchievementToast'
-import { Maximize2, Minimize2, Home, Star, Users, Hourglass, Trophy, Flame } from 'lucide-react'
+import { Maximize2, Minimize2, Home, Star, Users, Hourglass, Trophy, Flame, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { useTheme } from '@/lib/theme'
 import type { Classification, QuestionScore } from '@/lib/types'
 
 export default function QuizPage() {
   const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
   const {
     state, currentQuestion, totalQuestions, answeredCount, progressPercent, dispatch,
     lastNewAchievements, clearLastNewAchievements,
@@ -88,13 +90,13 @@ export default function QuizPage() {
   const isRoomMode = !!state.sessionCode
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans text-white">
+    <main className="relative min-h-screen bg-background text-foreground transition-colors duration-300 font-sans">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-1/3 h-64 w-64 rounded-full bg-blue-600/8 blur-3xl" />
+        <div className="absolute top-0 right-1/3 h-64 w-64 rounded-full bg-blue-600/5 dark:bg-blue-600/8 blur-3xl" />
       </div>
 
       {/* Top Bar */}
-      <div className="relative z-20 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-sm">
+      <div className="relative z-20 border-b border-slate-200 dark:border-slate-800/60 bg-slate-100/80 dark:bg-slate-950/80 backdrop-blur-sm transition-colors duration-300">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
           <button onClick={() => {
             if (confirm('Deseja sair do quiz? Seu progresso nesta sala será perdido.')) {
@@ -102,46 +104,54 @@ export default function QuizPage() {
               router.push('/')
             }
           }}
-            className="flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-slate-200"
+            className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:transition-colors dark:hover:text-slate-200"
             aria-label="Sair da Sala">
             <Home className="h-4 w-4" />
-            <span className="text-xs">{state.playerName}</span>
+            <span className="text-xs font-semibold">{state.playerName}</span>
           </button>
 
           <div className="flex items-center gap-3">
             {isRoomMode && (
-              <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-xs text-blue-300">
+              <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-xs text-blue-600 dark:text-blue-300">
                 Sala: {state.sessionCode}
               </Badge>
             )}
 
             {!isRoomMode && (
-              <span className="text-sm text-slate-400">
-                Q<span className="font-bold text-white">{state.currentIndex + 1}</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                Q<span className="font-bold text-slate-700 dark:text-white">{state.currentIndex + 1}</span>
                 /{totalQuestions}
               </span>
             )}
 
             {/* Score */}
             <div className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1">
-              <Star className="h-3 w-3 text-blue-400" />
+              <Star className="h-3 w-3 text-blue-500 dark:text-blue-400" />
               <motion.span
                 key={state.totalScore}
                 initial={{ scale: 1.3, color: '#34d399' }}
-                animate={{ scale: 1, color: '#93c5fd' }}
+                animate={{ scale: 1, color: '#2563eb' }}
                 transition={{ duration: 0.4 }}
-                className="text-sm font-bold text-blue-300 tabular-nums"
+                className="text-sm font-bold text-blue-600 dark:text-blue-300 tabular-nums"
               >
                 {state.totalScore.toLocaleString()}
               </motion.span>
             </div>
           </div>
 
-          <Button variant="ghost" size="sm" onClick={toggleFullscreen}
-            className="text-slate-400 hover:text-white"
-            aria-label={isFullscreen ? 'Sair do modo tela cheia' : 'Ativar modo tela cheia'}>
-            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={toggleTheme}
+              className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full h-8 w-8 p-0"
+              title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}>
+              {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4 text-blue-600" />}
+            </Button>
+
+            <Button variant="ghost" size="sm" onClick={toggleFullscreen}
+              className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full h-8 w-8 p-0"
+              aria-label={isFullscreen ? 'Sair do modo tela cheia' : 'Ativar modo tela cheia'}>
+              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
 
         {/* Barra de progresso visível apenas em andamento */}

@@ -8,9 +8,10 @@ import { ResultBreakdown } from '@/components/quiz/ResultBreakdown'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { RotateCcw, Home, Trophy, TrendingUp, Lightbulb, Star, Zap, Flame } from 'lucide-react'
+import { RotateCcw, Home, Trophy, TrendingUp, Lightbulb, Star, Zap, Flame, Sun, Moon } from 'lucide-react'
 import { ACHIEVEMENTS } from '@/lib/scoring'
 import { getSessionRanking, type DbPlayer } from '@/lib/supabase-helpers'
+import { useTheme } from '@/lib/theme'
 
 const levelConfig = {
   iniciante: {
@@ -32,6 +33,7 @@ const levelConfig = {
 
 export default function ResultadoPage() {
   const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
   const {
     state, dispatch, totalCorrect, totalQuestions, performanceLevel, blockScores,
     saveToRanking, ranking,
@@ -99,10 +101,23 @@ export default function ResultadoPage() {
   return (
     <>
       {/* Container Interativo Principal (Oculto na Impressão) */}
-      <main className="relative min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 print:hidden">
+      <main className="relative min-h-screen bg-background text-foreground transition-colors duration-300 print:hidden">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 right-0 h-96 w-96 rounded-full bg-blue-600/8 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-violet-600/8 blur-3xl" />
+          <div className="absolute top-20 right-0 h-96 w-96 rounded-full bg-blue-600/5 dark:bg-blue-600/8 blur-3xl" />
+          <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-violet-600/5 dark:bg-violet-600/8 blur-3xl" />
+        </div>
+
+        {/* Botão de Alternar Tema (Fixo no canto superior direito) */}
+        <div className="absolute top-6 right-6 z-30">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-slate-500 hover:text-slate-755 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full shadow-sm"
+            title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-500" /> : <Moon className="h-5 w-5 text-blue-600" />}
+          </Button>
         </div>
 
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-16">

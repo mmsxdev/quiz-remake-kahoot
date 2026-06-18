@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Users, Target, ArrowRight, Trophy, Zap, Flame, RotateCcw, Plus, CheckCircle, AlertTriangle, Key } from 'lucide-react'
+import { BookOpen, Users, Target, ArrowRight, Trophy, Zap, Flame, RotateCcw, Plus, CheckCircle, AlertTriangle, Key, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -13,12 +13,14 @@ import type { PlayerData, Question } from '@/lib/types'
 import questionsData from '@/data/questions.json'
 import { getSessionByCode, joinSession } from '@/lib/supabase-helpers'
 import { supabase, isSupabaseEnabled } from '@/lib/supabase'
+import { useTheme } from '@/lib/theme'
 
 const questions = questionsData as Question[]
 
 function WelcomeForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { theme } = useTheme()
   const { state, dispatch, player, setPlayer, resetPlayer, ranking } = useQuiz()
 
   // Form states
@@ -239,11 +241,11 @@ function WelcomeForm() {
 
       {/* Título Principal */}
       <motion.div className="mb-8 text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <h1 className="font-display mb-3 text-5xl font-bold tracking-tight text-white md:text-6xl">
+        <h1 className="font-display mb-3 text-5xl font-bold tracking-tight text-slate-900 dark:text-white md:text-6xl">
           Competência ou{' '}
-          <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent font-black">Capacidade?</span>
+          <span className="bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400 bg-clip-text text-transparent font-black">Capacidade?</span>
         </h1>
-        <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-400">
+        <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">
           Identifique e classifique os conceitos estruturantes da Metodologia SENAI de Educação Profissional.
         </p>
       </motion.div>
@@ -257,13 +259,13 @@ function WelcomeForm() {
           { icon: Trophy, label: 'Bônus de velocidade', desc: 'Responda rápido para pontuar mais', color: 'amber' },
         ].map((item, i) => (
           <motion.div key={item.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.08 }}>
-            <Card className="border-slate-800/80 bg-slate-900/40 backdrop-blur-sm">
+            <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
               <CardContent className="flex flex-col items-center p-5 text-center">
-                <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-850 border border-slate-800 text-${item.color}-400`}>
+                <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-${item.color}-600 dark:text-${item.color}-400 transition-colors duration-300`}>
                   <item.icon className="h-5 w-5" />
                 </div>
-                <p className="font-semibold text-white text-sm">{item.label}</p>
-                <p className="text-xs text-slate-400 mt-1">{item.desc}</p>
+                <p className="font-semibold text-slate-800 dark:text-white text-sm">{item.label}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{item.desc}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -323,11 +325,11 @@ function WelcomeForm() {
           <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="flex w-full max-w-md flex-col gap-4">
             
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm space-y-4">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 backdrop-blur-sm space-y-4 shadow-sm dark:shadow-none transition-colors duration-300">
               
               {/* Nome */}
               <div>
-                <label htmlFor="player-name" className="mb-1.5 block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <label htmlFor="player-name" className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Seu Nome Completo
                 </label>
                 <input
@@ -337,16 +339,16 @@ function WelcomeForm() {
                   onChange={(e) => { setNameInput(e.target.value); setNameError('') }}
                   placeholder="Ex: Prof. Carlos Silva"
                   maxLength={40}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-lg border border-slate-250 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/80 px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 />
                 {nameError && <p className="mt-1.5 text-xs text-red-400">{nameError}</p>}
               </div>
 
               {/* Código da sala (Supabase) */}
               <div>
-                <label htmlFor="room-code" className="mb-1.5 block text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <label htmlFor="room-code" className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
                   <span>Código da Sala (Obrigatório)</span>
-                  <span className="text-[10px] text-slate-500 font-normal normal-case">Estilo Kahoot</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal normal-case">Estilo Kahoot</span>
                 </label>
                 <div className="relative">
                   <input
@@ -356,9 +358,9 @@ function WelcomeForm() {
                     onChange={(e) => { setCodeInput(e.target.value.toUpperCase()); setCodeError('') }}
                     placeholder="Ex: SENAI1"
                     maxLength={8}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950/80 pl-4 pr-10 py-3 text-white placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-mono tracking-widest uppercase"
+                    className="w-full rounded-lg border border-slate-250 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/80 pl-4 pr-10 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-mono tracking-widest uppercase"
                   />
-                  <div className="absolute right-3 top-3.5 text-slate-500">
+                  <div className="absolute right-3 top-3.5 text-slate-450 dark:text-slate-500">
                     <Key className="h-4 w-4" />
                   </div>
                 </div>
@@ -419,15 +421,30 @@ function WelcomeForm() {
 }
 
 export default function WelcomePage() {
+  const { theme, toggleTheme } = useTheme()
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans">
+    <main className="relative min-h-screen overflow-hidden bg-background text-foreground transition-colors duration-300 font-sans">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-blue-600/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-indigo-600/10 blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-blue-600/5 dark:bg-blue-600/10 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-indigo-600/5 dark:bg-indigo-600/10 blur-3xl" />
+      </div>
+
+      {/* Botão de Alternar Tema (Fixo no canto superior direito) */}
+      <div className="absolute top-6 right-6 z-30">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          className="text-slate-500 hover:text-slate-755 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full shadow-sm"
+          title={theme === 'dark' ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro'}
+        >
+          {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-500" /> : <Moon className="h-5 w-5 text-blue-600" />}
+        </Button>
       </div>
 
       <Suspense fallback={
-        <div className="relative z-10 mx-auto flex min-h-screen flex-col items-center justify-center text-white">
+        <div className="relative z-10 mx-auto flex min-h-screen flex-col items-center justify-center text-foreground">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
           <p className="mt-4 text-sm text-slate-400">Carregando formulário...</p>
         </div>
