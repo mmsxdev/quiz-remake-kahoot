@@ -13,6 +13,8 @@ export interface DbSession {
   created_at: string
   current_question_index: number
   status: 'lobby' | 'question' | 'leaderboard' | 'ended'
+  is_paused: boolean
+  last_host_ping: string | null
 }
 
 export interface DbPlayer {
@@ -214,4 +216,55 @@ export async function getSessionRanking(sessionId: string): Promise<DbPlayer[]> 
   }
 
   return (data ?? []) as DbPlayer[]
+}
+
+/**
+ * Atualiza o status de pausa da sessão (coordenador).
+ */
+export async function updateSessionPauseStatus(sessionId: string, isPaused: boolean): Promise<void> {
+  if (!supabase) return
+
+  const { error } = await supabase
+    .from('quiz_sessions')
+    .update({ is_paused: isPaused })
+    .eq('id', sessionId)
+
+  if (error) {
+    throw new Error(`Erro ao atualizar pausa da sessão: ${error.message}`)
+  }
+}
+
+/**
+ * Atualiza o heartbeat do apresentador na sessão.
+ */
+export async function updateSessionHostPing(sessionId: string): Promise<void> {
+  if (!supabase) return
+
+  const { error } = await supabase
+    .from('quiz_sessions')
+    .update({ last_host_ping: new Date().toISOString() })
+    .eq('id', sessionId)
+
+  if (error) {
+    console.error('[QuizDida] Erro ao enviar ping do host:', error)
+  }
+}
+
+/**
+ * Registra um evento de auditoria no banco de dados.
+ */
+export async function logSessionEvent(sessionId: string, eventType: string, details: any = {}): Promise<void> {
+  if (!supabase) return
+
+  const { error } = await supabase
+    .from('quiz_logs')
+    .insert({
+      session_id: sessionId,
+      event_type: eventType,
+      details
+    })
+
+  if (error) {
+    console.error('[QuizDida] Erro ao registrar log:', error)
+  }
 }

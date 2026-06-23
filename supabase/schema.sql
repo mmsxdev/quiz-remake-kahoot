@@ -78,3 +78,28 @@ ALTER PUBLICATION supabase_realtime ADD TABLE quiz_sessions;
 -- =============================================================================
 -- FIM DO SCHEMA
 -- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- MIGRAÇÕES ADICIONAIS: PAUSE, HEARTBEAT E LOGS DE AUDITORIA
+-- -----------------------------------------------------------------------------
+ALTER TABLE quiz_sessions ADD COLUMN IF NOT EXISTS is_paused boolean NOT NULL DEFAULT false;
+ALTER TABLE quiz_sessions ADD COLUMN IF NOT EXISTS last_host_ping timestamptz;
+
+CREATE TABLE IF NOT EXISTS quiz_logs (
+  id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id  uuid        NOT NULL REFERENCES quiz_sessions(id) ON DELETE CASCADE,
+  event_type  varchar(50) NOT NULL,
+  details     jsonb       NOT NULL DEFAULT '{}'::jsonb,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+-- Habilitar RLS nos logs
+ALTER TABLE quiz_logs ENABLE ROW LEVEL SECURITY;
+
+-- Segurança RLS: Apenas escrita é liberada publicamente para registrar logs de forma anônima.
+-- Sem política de SELECT pública (leitura bloqueada para usuários comuns).
+CREATE POLICY "logs_insert" ON quiz_logs FOR INSERT TO anon WITH CHECK (true);
+
+-- Habilitar Realtime para os logs
+ALTER PUBLICATION supabase_realtime ADD TABLE quiz_logs;
+

@@ -113,6 +113,7 @@ export interface QuizState {
   timerEnabled: boolean
   sessionStatus: 'lobby' | 'question' | 'leaderboard' | 'ended' | null
   sessionQuestionIndex: number
+  sessionIsPaused: boolean
 }
 
 // ─── Player e Ranking ─────────────────────────────────────────────────────────
@@ -185,5 +186,6 @@ export type QuizAction =
       payload: {
         status: 'lobby' | 'question' | 'leaderboard' | 'ended'
         currentQuestionIndex: number
+        isPaused?: boolean
       }
     }

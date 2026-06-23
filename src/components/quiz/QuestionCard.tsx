@@ -26,9 +26,11 @@ interface QuestionCardProps {
   currentStreak: number
   timerEnabled: boolean
   isRoomMode: boolean
+  sessionIsPaused?: boolean
 }
 
 // ─── Botão de Classificação (Fase 1) ─────────────────────────────────────────
+
 
 interface ClassificationButtonProps {
   label: Classification
@@ -84,6 +86,7 @@ function ClassificationButton({ label, isSelected, isCorrect, isDisabled, onClic
 export function QuestionCard({
   question, shuffledOptions, result, onAnswer, onNext,
   questionNumber, totalQuestions, currentStreak, timerEnabled, isRoomMode,
+  sessionIsPaused = false,
 }: QuestionCardProps) {
   const isTwoPhase = question.type === 'two-phase'
   const isLastQuestion = questionNumber === totalQuestions
@@ -300,7 +303,7 @@ export function QuestionCard({
             <QuizTimer
               timeLimitSec={currentTimerLimit}
               resetKey={`${question.id}_${timerPhase}_${timerResetKey}`}
-              paused={timerPaused}
+              paused={timerPaused || sessionIsPaused}
               onTick={handleTick}
               onTimeout={
                 isTwoPhase

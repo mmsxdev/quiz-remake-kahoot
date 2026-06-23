@@ -63,6 +63,7 @@ const initialState: QuizState = {
   timerEnabled: false,
   sessionStatus: 'lobby',
   sessionQuestionIndex: 0,
+  sessionIsPaused: false,
 }
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
@@ -96,6 +97,7 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
         timerEnabled: timerEnabled ?? false,
         sessionStatus: 'lobby',
         sessionQuestionIndex: 0,
+        sessionIsPaused: false,
       }
     }
 
@@ -156,7 +158,7 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
       return action.payload
 
     case 'UPDATE_SESSION_STATE': {
-      const { status, currentQuestionIndex } = action.payload
+      const { status, currentQuestionIndex, isPaused } = action.payload
 
       let newPhase = state.phase
       let newIndex = state.currentIndex
@@ -172,6 +174,7 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
         ...state,
         sessionStatus: status,
         sessionQuestionIndex: currentQuestionIndex,
+        sessionIsPaused: typeof isPaused === 'boolean' ? isPaused : state.sessionIsPaused,
         phase: newPhase,
         currentIndex: newIndex,
       }
@@ -223,6 +226,7 @@ interface QuizContextValue {
   // Achievement toasts
   lastNewAchievements: AchievementId[]
   clearLastNewAchievements: () => void
+  realtimeActive: boolean
 }
 
 const QuizContext = createContext<QuizContextValue | null>(null)
@@ -325,6 +329,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
               payload: {
                 status: updatedSession.status,
                 currentQuestionIndex: updatedSession.current_question_index,
+                isPaused: updatedSession.is_paused,
               },
             })
           }
@@ -347,20 +352,22 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data, error } = await supabase!
           .from('quiz_sessions')
-          .select('status, current_question_index')
+          .select('status, current_question_index, is_paused')
           .eq('id', state.sessionId)
           .single()
 
         if (data && !error) {
           if (
             data.status !== state.sessionStatus ||
-            data.current_question_index !== state.sessionQuestionIndex
+            data.current_question_index !== state.sessionQuestionIndex ||
+            data.is_paused !== state.sessionIsPaused
           ) {
             dispatch({
               type: 'UPDATE_SESSION_STATE',
               payload: {
                 status: data.status,
                 currentQuestionIndex: data.current_question_index,
+                isPaused: data.is_paused,
               },
             })
           }
@@ -447,6 +454,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       ranking, saveToRanking,
       history, saveAttemptToHistory, clearHistory,
       lastNewAchievements, clearLastNewAchievements,
+      realtimeActive,
     }}>
       {children}
     </QuizContext.Provider>

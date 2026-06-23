@@ -7,7 +7,7 @@ import { useQuiz } from '@/lib/quiz-context'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { QuizProgressBar } from '@/components/quiz/QuizProgressBar'
 import { AchievementToast } from '@/components/quiz/AchievementToast'
-import { Maximize2, Minimize2, Home, Star, Users, Hourglass, Trophy, Flame, Sun, Moon } from 'lucide-react'
+import { Maximize2, Minimize2, Home, Star, Users, Hourglass, Trophy, Flame, Sun, Moon, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,9 +19,11 @@ export default function QuizPage() {
   const { theme, toggleTheme } = useTheme()
   const {
     state, currentQuestion, totalQuestions, answeredCount, progressPercent, dispatch,
-    lastNewAchievements, clearLastNewAchievements,
+    lastNewAchievements, clearLastNewAchievements, realtimeActive,
   } = useQuiz()
   const [isFullscreen, setIsFullscreen] = useState(false)
+
+  const isRoomMode = !!state.sessionCode
 
   // 1. Redirecionamento de fase
   useEffect(() => {
@@ -45,6 +47,15 @@ export default function QuizPage() {
     document.addEventListener('fullscreenchange', handler)
     return () => document.removeEventListener('fullscreenchange', handler)
   }, [])
+
+  // 2b. Preloader de mídias/áudio no lobby
+  useEffect(() => {
+    if (isRoomMode && state.sessionStatus === 'lobby') {
+      const audio = new Audio()
+      audio.src = '/audio/quiz_music.mp3'
+      audio.preload = 'auto'
+    }
+  }, [isRoomMode, state.sessionStatus])
 
   // 3. Resposta submetida
   function handleAnswer(params: {
@@ -87,10 +98,27 @@ export default function QuizPage() {
     ? state.results.find((r) => r.questionId === currentQuestion.id) ?? null
     : null
 
-  const isRoomMode = !!state.sessionCode
-
   return (
     <main className="relative min-h-screen bg-background text-foreground transition-colors duration-300 font-sans">
+      {/* Overlay de Pausa Completa */}
+      {isRoomMode && state.sessionIsPaused && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md transition-all duration-300">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex flex-col items-center text-center max-w-sm px-6"
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 animate-pulse mb-4">
+              <Pause className="h-8 w-8" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Quiz Pausado</h2>
+            <p className="text-slate-400 text-sm">
+              O apresentador pausou o quiz temporariamente. O cronômetro está congelado. Aguarde o retorno...
+            </p>
+          </motion.div>
+        </div>
+      )}
+
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-1/3 h-64 w-64 rounded-full bg-blue-600/5 dark:bg-blue-600/8 blur-3xl" />
       </div>
@@ -115,6 +143,17 @@ export default function QuizPage() {
               <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-xs text-blue-600 dark:text-blue-300">
                 Sala: {state.sessionCode}
               </Badge>
+            )}
+
+            {isRoomMode && (
+              <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${
+                realtimeActive ? 'text-emerald-500' : 'text-amber-500 animate-pulse'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${
+                  realtimeActive ? 'bg-emerald-500' : 'bg-amber-500 animate-ping'
+                }`} />
+                {realtimeActive ? 'Conectado' : 'Reconectando'}
+              </span>
             )}
 
             {!isRoomMode && (
@@ -243,6 +282,7 @@ export default function QuizPage() {
                 currentStreak={state.currentStreak}
                 timerEnabled={state.timerEnabled}
                 isRoomMode={isRoomMode}
+                sessionIsPaused={state.sessionIsPaused}
               />
             </motion.div>
           )}

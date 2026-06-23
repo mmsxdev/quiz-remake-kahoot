@@ -1,16 +1,17 @@
 'use client'
 
-import React, { useEffect, useState, useMemo, useRef } from 'react'
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Users, CheckCircle, Flame, Star, AlertCircle, ShieldAlert, Ban, QrCode, Home, Play, ArrowRight, Check, Eye, Volume2, VolumeX, Music, Sun, Moon } from 'lucide-react'
+import { Trophy, Users, CheckCircle, Flame, Star, AlertCircle, ShieldAlert, Ban, QrCode, Home, Play, ArrowRight, Check, Eye, Volume2, VolumeX, Music, Sun, Moon, Pause, PlayCircle, ExternalLink, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/lib/supabase'
-import { getSessionByCode, getSessionRanking, closeSession, updateSessionStatus, type DbPlayer, type DbSession } from '@/lib/supabase-helpers'
+import { getSessionByCode, getSessionRanking, closeSession, updateSessionStatus, updateSessionPauseStatus, updateSessionHostPing, logSessionEvent, type DbPlayer, type DbSession } from '@/lib/supabase-helpers'
 import { ACHIEVEMENTS, SCORE_CONFIG } from '@/lib/scoring'
 import { useTheme } from '@/lib/theme'
+import { calculateSessionStats } from '@/lib/statistics'
 import questionsData from '@/data/questions.json'
 import type { Question, Option, Phase2Option } from '@/lib/types'
 
@@ -39,7 +40,73 @@ export default function RankingSalaPage() {
   const [revealed, setRevealed] = useState(false) // Se o Host já revelou a resposta desta questão
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // 1. Busca inicial da sessão e ranking
+  // Melhorias Premium
+  const [hijacked, setHijacked] = useState(false)
+  const [isHijackScreen, setIsHijackScreen] = useState(false)
+  const [connectionState, setConnectionState] = useState<'connected' | 'reconnecting' | 'offline'>('connected')
+  const [showCloseConfirmModal, setShowCloseConfirmModal] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
+        setIsFullscreen(true)
+      } else {
+        await document.exitFullscreen()
+        setIsFullscreen(false)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', handler)
+    return () => document.removeEventListener('fullscreenchange', handler)
+  }, [])
+
+  async function handleTogglePause() {
+    if (!session) return
+    const nextPause = !session.is_paused
+    try {
+      await updateSessionPauseStatus(session.id, nextPause)
+      setSession(prev => prev ? { ...prev, is_paused: nextPause } : null)
+      await logSessionEvent(session.id, nextPause ? 'quiz_paused' : 'quiz_resumed', {
+        questionIndex: session.current_question_index
+      })
+    } catch (err: any) {
+      alert(`Erro ao alterar status de pausa: ${err.message}`)
+    }
+  }
+
+  // ── Persistência de Preferências do Host ──
+  useEffect(() => {
+    try {
+      const savedVolume = localStorage.getItem('quizdida_host_volume')
+      if (savedVolume !== null) setMaxVolume(parseFloat(savedVolume))
+
+      const savedPlaying = localStorage.getItem('quizdida_host_playing')
+      if (savedPlaying !== null) setPlaying(savedPlaying === 'true')
+    } catch (e) {
+      console.error('Erro ao ler LocalStorage:', e)
+    }
+  }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('quizdida_host_volume', maxVolume.toString())
+    } catch (e) {}
+  }, [maxVolume])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('quizdida_host_playing', playing.toString())
+    } catch (e) {}
+  }, [playing])
+
+  // ── 1. Busca inicial da sessão e ranking (com Heartbeat/Host Único) ──
   useEffect(() => {
     if (!code) return
 
@@ -51,7 +118,20 @@ export default function RankingSalaPage() {
           setError(`Sala "${code}" não encontrada ou já encerrada.`)
           return
         }
-        setSession(sess)
+
+        const now = new Date().getTime()
+        const lastPing = sess.last_host_ping ? new Date(sess.last_host_ping).getTime() : 0
+        const isHostActive = (now - lastPing) < 15000 // 15 segundos limite
+
+        if (isHostActive && !hijacked) {
+          setIsHijackScreen(true)
+          setSession(sess)
+        } else {
+          setIsHijackScreen(false)
+          await updateSessionHostPing(sess.id)
+          setSession(sess)
+          await logSessionEvent(sess.id, hijacked ? 'host_takeover' : 'host_entered', { details: 'Apresentador entrou na sala' })
+        }
 
         const rank = await getSessionRanking(sess.id)
         setPlayers(rank)
@@ -64,9 +144,22 @@ export default function RankingSalaPage() {
     }
 
     loadData()
-  }, [code])
+  }, [code, hijacked])
 
-  // 2. Realtime subscription para atualizar jogadores e sessão
+  // ── Heartbeat Ping loop ──
+  useEffect(() => {
+    if (!session || isHijackScreen) return
+
+    const intervalId = setInterval(() => {
+      updateSessionHostPing(session.id)
+    }, 5000) // a cada 5 segundos
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [session?.id, isHijackScreen])
+
+  // ── 2. Realtime subscription para atualizar jogadores e sessão ──
   useEffect(() => {
     if (!session || !supabase) return
 
@@ -90,7 +183,11 @@ export default function RankingSalaPage() {
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') setConnectionState('connected')
+        else if (status === 'TIMED_OUT' || status === 'CLOSED') setConnectionState('offline')
+        else setConnectionState('reconnecting')
+      })
 
     // Escuta mudanças na sessão (caso o Host controle por outro dispositivo ou para sincronização)
     const sessionChannel = supabase
@@ -106,7 +203,12 @@ export default function RankingSalaPage() {
         (payload) => {
           const updatedSess = payload.new as DbSession
           if (updatedSess) {
-            setSession((prev) => prev ? { ...prev, status: updatedSess.status, current_question_index: updatedSess.current_question_index } : null)
+            setSession((prev) => prev ? { 
+              ...prev, 
+              status: updatedSess.status, 
+              current_question_index: updatedSess.current_question_index,
+              is_paused: updatedSess.is_paused
+            } : null)
           }
         }
       )
@@ -118,9 +220,9 @@ export default function RankingSalaPage() {
     }
   }, [session])
 
-  // 3. Gerenciamento do Cronômetro do Host
+  // ── 3. Gerenciamento do Cronômetro do Host ──
   useEffect(() => {
-    if (!session || session.status !== 'question' || !session.timer_enabled || revealed) {
+    if (!session || session.status !== 'question' || !session.timer_enabled || revealed || session.is_paused) {
       if (timerRef.current) {
         clearInterval(timerRef.current)
         timerRef.current = null
@@ -135,7 +237,7 @@ export default function RankingSalaPage() {
       ? SCORE_CONFIG.TIME_LIMIT_TWO_PHASE_P1 + SCORE_CONFIG.TIME_LIMIT_TWO_PHASE_P2
       : SCORE_CONFIG.TIME_LIMIT_STANDARD
 
-    setTimeLeft(limit)
+    setTimeLeft((prev) => (timerActive ? prev : limit))
     setTimerActive(true)
 
     timerRef.current = setInterval(() => {
@@ -152,17 +254,19 @@ export default function RankingSalaPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [session?.status, session?.current_question_index, session?.timer_enabled, revealed])
+  }, [session?.status, session?.current_question_index, session?.timer_enabled, revealed, session?.is_paused, timerActive])
 
   // Reseta estado de revelação ao mudar de questão
   useEffect(() => {
     setRevealed(false)
+    setTimeLeft(30) // reseta timer visual
+    setTimerActive(false)
   }, [session?.current_question_index, session?.status])
 
-  // ── Controle do Player de Áudio ─────────────────────────────────────────────
+  // ── Controle do Player de Áudio ──
   useEffect(() => {
     if (!audioRef.current) return
-    if (playing) {
+    if (playing && !session?.is_paused) {
       audioRef.current.play().catch((err) => {
         console.log('Autoplay bloqueado. Aguardando clique do usuário.', err)
         setPlaying(false)
@@ -170,7 +274,7 @@ export default function RankingSalaPage() {
     } else {
       audioRef.current.pause()
     }
-  }, [playing])
+  }, [playing, session?.is_paused])
 
   // Lógica de volume dinâmico proporcional
   useEffect(() => {
@@ -185,6 +289,7 @@ export default function RankingSalaPage() {
     if (!session) return
     try {
       await updateSessionStatus(session.id, 'question', 0)
+      await logSessionEvent(session.id, 'quiz_started', { title: session.title })
     } catch (err: any) {
       alert(`Erro ao iniciar: ${err.message}`)
     }
@@ -192,12 +297,21 @@ export default function RankingSalaPage() {
 
   async function handleRevealAnswer() {
     setRevealed(true)
+    if (session) {
+      await logSessionEvent(session.id, 'question_revealed', {
+        questionIndex: session.current_question_index,
+        questionId: questions[session.current_question_index]?.id
+      })
+    }
   }
 
   async function handleShowLeaderboard() {
     if (!session) return
     try {
       await updateSessionStatus(session.id, 'leaderboard', session.current_question_index)
+      await logSessionEvent(session.id, 'leaderboard_shown', {
+        questionIndex: session.current_question_index
+      })
     } catch (err: any) {
       alert(`Erro ao mostrar leaderboard: ${err.message}`)
     }
@@ -211,8 +325,14 @@ export default function RankingSalaPage() {
     try {
       if (isFinished) {
         await updateSessionStatus(session.id, 'ended', session.current_question_index)
+        await logSessionEvent(session.id, 'quiz_ended', { totalQuestions: questions.length })
       } else {
         await updateSessionStatus(session.id, 'question', nextIdx)
+        await logSessionEvent(session.id, 'question_changed', {
+          fromIndex: session.current_question_index,
+          toIndex: nextIdx,
+          questionId: questions[nextIdx]?.id
+        })
       }
     } catch (err: any) {
       alert(`Erro ao avançar: ${err.message}`)
@@ -222,18 +342,33 @@ export default function RankingSalaPage() {
   function exportToCSV() {
     if (!session || players.length === 0) return
     
+    const stats = calculateSessionStats(players, questions.length)
+    const easiestText = stats.easiestQuestion 
+      ? `Questão ${stats.easiestQuestion.index} (${stats.easiestQuestion.successRate}% acertos)` 
+      : 'N/A'
+    const hardestText = stats.hardestQuestion 
+      ? `Questão ${stats.hardestQuestion.index} (${stats.hardestQuestion.successRate}% acertos)` 
+      : 'N/A'
+
     const csvRows = [
       `Relatório do Quiz — ${session.title}`,
       `Código da Sala: ${session.code}`,
       `Data de Encerramento: ${new Date().toLocaleString('pt-BR')}`,
-      `Total de Participantes: ${players.length}`,
+      `Total de Participantes: ${stats.totalParticipants}`,
+      `Média de Pontuação da Turma: ${stats.averageScore} pts`,
+      `Maior Pontuação: ${stats.highestScore} pts`,
+      `Menor Pontuação: ${stats.lowestScore} pts`,
+      `Tempo Médio de Resposta: ${stats.averageResponseTime}s`,
+      `Questão Mais Fácil: ${easiestText}`,
+      `Questão Mais Difícil: ${hardestText}`,
       '',
-      'Classificação,Nome,Pontuação Total,Acertos,Total de Questões,Aproveitamento (%)'
+      'Classificação,Nome,Pontuação Total,Acertos,Total de Questões,Aproveitamento (%),Streak Máximo,Conquistas'
     ]
 
     players.forEach((p, idx) => {
       const pct = p.total_questions > 0 ? Math.round((p.correct_answers / p.total_questions) * 100) : 0
-      csvRows.push(`${idx + 1},"${p.name.replace(/"/g, '""')}",${p.score},${p.correct_answers},${p.total_questions},${pct}%`)
+      const achievementsList = (p.achievements || []).join('; ')
+      csvRows.push(`${idx + 1},"${p.name.replace(/"/g, '""')}",${p.score},${p.correct_answers},${p.total_questions},${pct}%,${p.max_streak},"${achievementsList}"`)
     })
 
     const csvContent = '\uFEFF' + csvRows.join('\r\n')
@@ -249,15 +384,7 @@ export default function RankingSalaPage() {
 
   async function handleCloseSession() {
     if (!session) return
-    if (!confirm('Tem certeza que deseja encerrar permanentemente esta sessão e baixar o relatório?')) return
-
-    try {
-      exportToCSV()
-      await closeSession(session.id)
-      router.push('/')
-    } catch (err: any) {
-      alert(`Erro ao encerrar sessão: ${err.message}`)
-    }
+    setShowCloseConfirmModal(true)
   }
 
   // ─── Dados Calculados ───────────────────────────────────────────────────────
@@ -320,6 +447,10 @@ export default function RankingSalaPage() {
     return podium.length > 0 ? podium : sorted
   }, [players])
 
+  const endedStats = useMemo(() => {
+    return calculateSessionStats(players, questions.length)
+  }, [players])
+
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 text-white">
@@ -340,6 +471,36 @@ export default function RankingSalaPage() {
         <Button onClick={() => router.push('/')} className="bg-blue-600 hover:bg-blue-700">
           Voltar ao Início
         </Button>
+      </div>
+    )
+  }
+
+  if (isHijackScreen) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6 text-center text-white font-sans">
+        <div className="mb-4 rounded-full bg-amber-500/10 p-4 text-amber-400">
+          <ShieldAlert className="h-12 w-12 animate-pulse" />
+        </div>
+        <h1 className="text-2xl font-bold text-white mb-2">Sala com Apresentador Ativo</h1>
+        <p className="text-slate-400 max-w-md mb-6">
+          Esta sala já possui uma janela de apresentador conectada e ativa nos últimos 15 segundos. 
+          Deseja assumir o controle da sala? A outra sessão será desconectada.
+        </p>
+        <div className="flex gap-4">
+          <Button
+            onClick={() => router.push('/')}
+            variant="outline"
+            className="border-slate-800 text-slate-300 hover:bg-slate-900"
+          >
+            Voltar ao Início
+          </Button>
+          <Button
+            onClick={() => setHijacked(true)}
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+          >
+            Forçar Entrada (Assumir)
+          </Button>
+        </div>
       </div>
     )
   }
@@ -402,6 +563,41 @@ export default function RankingSalaPage() {
               {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4 text-blue-600" />}
             </Button>
 
+            {/* Indicador de Conexão */}
+            <div className="flex items-center gap-1.5 border-r border-slate-200 dark:border-slate-800 pr-4">
+              <span className={`h-2.5 w-2.5 rounded-full ${
+                connectionState === 'connected' ? 'bg-emerald-500' :
+                connectionState === 'reconnecting' ? 'bg-amber-500 animate-pulse' :
+                'bg-red-500 animate-ping'
+              }`} />
+              <span className={`text-xs font-semibold ${
+                connectionState === 'connected' ? 'text-emerald-500' :
+                connectionState === 'reconnecting' ? 'text-amber-500' :
+                'text-red-500'
+              }`}>
+                {connectionState === 'connected' ? 'Conectado' :
+                 connectionState === 'reconnecting' ? 'Reconectando' :
+                 'Offline'}
+              </span>
+            </div>
+
+            {/* Controle de Pausa */}
+            {session.status === 'question' && (
+              <Button
+                onClick={handleTogglePause}
+                variant="outline"
+                size="sm"
+                className={`gap-1.5 h-8 ${
+                  session.is_paused 
+                    ? 'bg-amber-500/20 text-amber-500 border-amber-500/30 hover:bg-amber-500/30' 
+                    : 'text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                {session.is_paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                {session.is_paused ? 'Retomar' : 'Pausar'}
+              </Button>
+            )}
+
             <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-sm">
               <Users className="h-4 w-4 text-blue-500 dark:text-blue-400" />
               <span><strong>{players.length}</strong> conectados</span>
@@ -412,6 +608,18 @@ export default function RankingSalaPage() {
           </div>
         </div>
       </header>
+
+      {/* Barra de Progresso Linear do Host */}
+      {session.status === 'question' && (
+        <div className="w-full h-1 bg-slate-200 dark:bg-slate-800 relative z-20">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${((session.current_question_index + 1) / questions.length) * 100}%` }}
+            transition={{ duration: 0.5 }}
+            className="h-full bg-blue-600 dark:bg-blue-500"
+          />
+        </div>
+      )}
 
       {/* Conteúdo Dinâmico por Status da Sessão */}
       <div className="relative z-10 mx-auto flex-1 w-full max-w-6xl px-6 py-10 flex flex-col justify-center">
@@ -427,7 +635,7 @@ export default function RankingSalaPage() {
               className="grid grid-cols-1 gap-8 lg:grid-cols-3 items-center"
             >
               {/* Painel do Código e Instruções de Acesso */}
-              <div className="lg:col-span-1 space-y-6">
+              <div className="lg:col-span-1 space-y-4">
                 <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-2xl p-6 text-center">
                   <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Como participar?</p>
                   <p className="text-sm text-slate-300 font-medium leading-relaxed">
@@ -456,6 +664,25 @@ export default function RankingSalaPage() {
                     Começar Quiz ({players.length}) <Play className="ml-2 h-5 w-5" />
                   </Button>
                 </Card>
+
+                {!isFullscreen && (
+                  <Card className="border-amber-500/20 bg-amber-500/5 backdrop-blur-md p-4 text-center">
+                    <p className="text-xs text-amber-500 font-bold flex items-center justify-center gap-1.5">
+                      <AlertCircle className="h-4 w-4" /> Recomendação de Projeção
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      Para uma melhor experiência no projetor, ative o modo Tela Cheia.
+                    </p>
+                    <Button
+                      onClick={toggleFullscreen}
+                      size="sm"
+                      variant="outline"
+                      className="mt-3 border-amber-500/30 hover:bg-amber-500/10 text-amber-500 font-bold text-xs"
+                    >
+                      Ativar Tela Cheia
+                    </Button>
+                  </Card>
+                )}
               </div>
 
               {/* Lista de Alunos conectados no Lobby */}
@@ -785,6 +1012,30 @@ export default function RankingSalaPage() {
                 })}
               </div>
 
+              {/* Dashboard de Estatísticas da Sala */}
+              <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md p-5 text-center shadow-xl">
+                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Média de Pontos</p>
+                  <p className="text-2xl font-black text-blue-400 mt-1">{endedStats.averageScore.toLocaleString()} pts</p>
+                </Card>
+                <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md p-5 text-center shadow-xl">
+                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Tempo Médio</p>
+                  <p className="text-2xl font-black text-violet-400 mt-1">{endedStats.averageResponseTime}s</p>
+                </Card>
+                <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md p-5 text-center shadow-xl">
+                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Mais Fácil</p>
+                  <p className="text-sm font-bold text-emerald-400 mt-2 truncate" title={endedStats.easiestQuestion ? `Questão ${endedStats.easiestQuestion.index} (${endedStats.easiestQuestion.successRate}% acertos)` : 'N/A'}>
+                    {endedStats.easiestQuestion ? `Questão ${endedStats.easiestQuestion.index} (${endedStats.easiestQuestion.successRate}%)` : 'N/A'}
+                  </p>
+                </Card>
+                <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md p-5 text-center shadow-xl">
+                  <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Mais Difícil</p>
+                  <p className="text-sm font-bold text-red-400 mt-2 truncate" title={endedStats.hardestQuestion ? `Questão ${endedStats.hardestQuestion.index} (${endedStats.hardestQuestion.successRate}% acertos)` : 'N/A'}>
+                    {endedStats.hardestQuestion ? `Questão ${endedStats.hardestQuestion.index} (${endedStats.hardestQuestion.successRate}%)` : 'N/A'}
+                  </p>
+                </Card>
+              </div>
+
               {/* Tabela de Classificação Completa */}
               <div className="max-w-4xl mx-auto mt-12 space-y-4">
                 <h3 className="text-center font-bold text-lg text-slate-300 flex items-center justify-center gap-2">
@@ -869,6 +1120,57 @@ export default function RankingSalaPage() {
         src="/audio/quiz_music.mp3"
         loop
       />
+
+      {/* Modal de Confirmação de Encerramento */}
+      {showCloseConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-200 text-left">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-400 mb-4">
+              <ShieldAlert className="h-8 w-8" />
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Encerrar Sala Permanentemente?</h3>
+            </div>
+            <p className="text-slate-600 dark:text-slate-300 text-sm mb-4">
+              Tem certeza de que deseja encerrar a sala <strong>{session.code}</strong>? Esta ação não pode ser desfeita.
+            </p>
+            <ul className="space-y-2 mb-6 text-sm text-slate-500 dark:text-slate-400 list-disc pl-4">
+              <li>
+                Os participantes serão desconectados e redirecionados.
+              </li>
+              <li>
+                O relatório CSV detalhado com todas as pontuações e estatísticas da turma será gerado automaticamente.
+              </li>
+              <li>
+                O código da sala será desativado permanentemente.
+              </li>
+            </ul>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowCloseConfirmModal(false)}
+                className="border-slate-200 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={async () => {
+                  setShowCloseConfirmModal(false)
+                  try {
+                    exportToCSV()
+                    await closeSession(session.id)
+                    await logSessionEvent(session.id, 'session_closed', { details: 'Sala encerrada permanentemente pelo apresentador' })
+                    router.push('/')
+                  } catch (err: any) {
+                    alert(`Erro ao encerrar sessão: ${err.message}`)
+                  }
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Encerrar Sala
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
