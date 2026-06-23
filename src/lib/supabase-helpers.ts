@@ -252,6 +252,9 @@ export async function updateSessionHostPing(sessionId: string): Promise<void> {
 
 /**
  * Registra um evento de auditoria no banco de dados.
+ * Falha silenciosamente caso a tabela quiz_logs ainda não exista (42P01)
+ * ou em caso de violação de RLS — logs são opcionais e não devem
+ * interromper o fluxo principal da aplicação.
  */
 export async function logSessionEvent(sessionId: string, eventType: string, details: any = {}): Promise<void> {
   if (!supabase) return
@@ -265,6 +268,13 @@ export async function logSessionEvent(sessionId: string, eventType: string, deta
     })
 
   if (error) {
-    console.error('[QuizDida] Erro ao registrar log:', error)
+    // 42P01 = tabela não existe → schema ainda não foi aplicado no Supabase
+    // 42501 = violação de RLS → esperado em ambientes sem a política correta
+    const isSilent = error.code === '42P01' || error.code === '42501'
+    if (!isSilent) {
+      console.warn(
+        `[QuizDida] Log de sessão não registrado (${error.code}): ${error.message}`
+      )
+    }
   }
 }
