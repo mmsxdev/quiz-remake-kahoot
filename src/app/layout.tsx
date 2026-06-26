@@ -18,6 +18,10 @@ const outfit = Outfit({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  ),
   title: 'QuizDida — Competência ou Capacidade? | SENAI',
   description:
     'Quiz interativo de formação docente baseado na Metodologia SENAI de Educação Profissional (MSEP). Identifique e diferencie Competências e Capacidades na perspectiva da MSEP.',
