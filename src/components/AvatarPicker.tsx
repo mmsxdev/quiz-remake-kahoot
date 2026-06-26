@@ -51,7 +51,7 @@ export function AvatarPicker({ open, onConfirm }: AvatarPickerProps) {
     /* disablePointerDismissal + onOpenChange evita fechar ao clicar fora ou pressionar ESC */
     <Dialog open={open} disablePointerDismissal onOpenChange={() => { /* bloqueado intencionalmente */ }}>
       <DialogContent
-        className="sm:max-w-md"
+        className="sm:max-w-lg"
         showCloseButton={false}
       >
         <DialogHeader className="text-center pb-0">
@@ -63,69 +63,72 @@ export function AvatarPicker({ open, onConfirm }: AvatarPickerProps) {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Grade de avatares */}
-        <div
-          className="mt-4 grid grid-cols-3 gap-4"
-          role="radiogroup"
-          aria-label="Seleção de avatar"
-        >
-          {AVATARS.map((avatar: Avatar) => {
-            const isSelected = selected === avatar.id
-            return (
-              <motion.button
-                key={avatar.id}
-                role="radio"
-                aria-checked={isSelected}
-                aria-label={`Avatar ${avatar.name}`}
-                onClick={() => setSelected(avatar.id)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                className={`
-                  relative flex flex-col items-center gap-2 rounded-2xl border-2 p-4 
-                  transition-colors duration-200 cursor-pointer focus:outline-none
-                  focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                  ${isSelected
-                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-500/10'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800/60'
-                  }
-                `}
-              >
-                {/* Indicador de seleção */}
-                <AnimatePresence>
-                  {isSelected && (
-                    <motion.span
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      className="absolute -top-2 -right-2 z-10"
-                    >
-                      <CheckCircle className="h-5 w-5 text-blue-500 dark:text-blue-400 fill-white dark:fill-slate-950" />
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-
-                <Image
-                  src={avatar.src}
-                  alt={`Avatar ${avatar.name}`}
-                  width={80}
-                  height={80}
-                  className="rounded-full object-contain"
-                  style={{ width: 80, height: 80 }}
-                />
-
-                <span
-                  className={`text-xs font-semibold ${
-                    isSelected
-                      ? 'text-blue-600 dark:text-blue-300'
-                      : 'text-slate-600 dark:text-slate-400'
-                  }`}
+        {/* Grade de avatares com barra de rolagem */}
+        <div className="mt-4 max-h-[360px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-850">
+          <div
+            className="grid grid-cols-3 sm:grid-cols-4 gap-3 p-1"
+            role="radiogroup"
+            aria-label="Seleção de avatar"
+          >
+            {AVATARS.map((avatar: Avatar) => {
+              const isSelected = selected === avatar.id
+              return (
+                <motion.button
+                  key={avatar.id}
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={`Avatar ${avatar.name}`}
+                  onClick={() => setSelected(avatar.id)}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  className={`
+                    relative flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 
+                    transition-colors duration-200 cursor-pointer focus:outline-none
+                    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+                    ${isSelected
+                      ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-500/10'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800/60'
+                    }
+                  `}
                 >
-                  {avatar.name}
-                </span>
-              </motion.button>
-            )
-          })}
+                  {/* Indicador de seleção */}
+                  <AnimatePresence>
+                    {isSelected && (
+                      <motion.span
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        className="absolute -top-1.5 -right-1.5 z-10"
+                      >
+                        <CheckCircle className="h-4 w-4 text-blue-500 dark:text-blue-400 fill-white dark:fill-slate-950" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+
+                  <Image
+                    src={avatar.src}
+                    alt={`Avatar ${avatar.name}`}
+                    width={64}
+                    height={64}
+                    className="rounded-full object-contain"
+                    style={{ width: 64, height: 64 }}
+                  />
+
+                  <span
+                    className={`text-[10px] sm:text-xs font-semibold text-center truncate w-full ${
+                      isSelected
+                        ? 'text-blue-600 dark:text-blue-300 font-bold'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                    title={avatar.name}
+                  >
+                    {avatar.name}
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Ação */}
