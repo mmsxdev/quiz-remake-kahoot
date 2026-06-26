@@ -23,6 +23,7 @@ import {
 } from './scoring'
 import { updatePlayerProgress } from './supabase-helpers'
 import { supabase } from './supabase'
+import { AVATAR_STORAGE_KEY } from '@/data/avatars'
 
 // ─── Chaves do localStorage ───────────────────────────────────────────────────
 
@@ -328,6 +329,27 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       lastAnsweredIndex: lastAnsweredIndex
     })
   }, [state.results, state.phase, state.playerId, state.totalScore, state.maxStreak, state.unlockedAchievements, state.finishedAt, state.questions])
+
+  // ── Sincroniza o Avatar com o Supabase ao carregar/reconectar (Garantia Lobby) ──
+  useEffect(() => {
+    if (!state.playerId || !supabase) return
+
+    async function syncAvatar() {
+      try {
+        const localAvatar = localStorage.getItem(AVATAR_STORAGE_KEY)
+        if (localAvatar) {
+          await supabase!
+            .from('quiz_players')
+            .update({ avatar_id: localAvatar })
+            .eq('id', state.playerId)
+        }
+      } catch (err) {
+        console.error('[QuizDida] Erro ao sincronizar avatar inicial:', err)
+      }
+    }
+
+    syncAvatar()
+  }, [state.playerId])
 
   // ── Escuta mudanças na sessão em tempo real (Host -> Player) ─────────────────
   useEffect(() => {
