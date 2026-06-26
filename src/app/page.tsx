@@ -54,11 +54,16 @@ function WelcomeForm() {
     }
   }, [])
 
-  // 1. Auto-preenche o código se vier na URL (?sala=CODE)
+  // 1. Auto-preenche o código se vier na URL (?sala=CODE) ou exibe erro se a sala foi encerrada
   useEffect(() => {
     const salaParam = searchParams?.get('sala')
     if (salaParam) {
       setCodeInput(salaParam.toUpperCase())
+    }
+
+    const erroParam = searchParams?.get('erro')
+    if (erroParam === 'sala-encerrada') {
+      setCodeError('A sala em que você estava foi encerrada pelo apresentador.')
     }
   }, [searchParams])
 

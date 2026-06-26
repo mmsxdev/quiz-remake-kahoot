@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import type {
   QuizState,
   QuizAction,
@@ -234,12 +235,33 @@ const QuizContext = createContext<QuizContextValue | null>(null)
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function QuizProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [state, dispatch] = useReducer(quizReducer, initialState)
   const [history, setHistory] = React.useState<QuizAttempt[]>([])
   const [player, setPlayerState] = useState<PlayerData | null>(null)
   const [ranking, setRanking] = useState<RankingEntry[]>([])
   const [lastNewAchievements, setLastNewAchievements] = useState<AchievementId[]>([])
   const [realtimeActive, setRealtimeActive] = useState(true)
+
+  // ── Player (modo local) ────────────────────────────────────────────────────
+  const setPlayer = useCallback((p: PlayerData) => {
+    setPlayerState(p)
+    try { localStorage.setItem(STORAGE_KEY_PLAYER, JSON.stringify(p)) } catch { }
+  }, [])
+
+  const markPlayerCompleted = useCallback((score: number, pct: number) => {
+    setPlayerState((prev) => {
+      if (!prev) return prev
+      const updated: PlayerData = { ...prev, hasCompleted: true, finalScore: score, finalPercentage: pct, completedAt: new Date().toISOString() }
+      try { localStorage.setItem(STORAGE_KEY_PLAYER, JSON.stringify(updated)) } catch { }
+      return updated
+    })
+  }, [])
+
+  const resetPlayer = useCallback(() => {
+    setPlayerState(null)
+    localStorage.removeItem(STORAGE_KEY_PLAYER)
+  }, [])
 
   // Rastreia conquistas novas para toast
   const prevAchievementsRef = useRef<AchievementId[]>([])
@@ -324,6 +346,14 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
         (payload) => {
           const updatedSession = payload.new as any
           if (updatedSession) {
+            // Se o apresentador encerrou a sala
+            if (updatedSession.is_active === false) {
+              dispatch({ type: 'RESTART_QUIZ' })
+              resetPlayer()
+              router.push('/?erro=sala-encerrada')
+              return
+            }
+
             dispatch({
               type: 'UPDATE_SESSION_STATE',
               payload: {
@@ -342,7 +372,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
     return () => {
       supabase?.removeChannel(channel)
     }
-  }, [state.sessionId])
+  }, [state.sessionId, resetPlayer, router])
 
   // ── Polling de fallback sob demanda (ativo apenas se Realtime falhar) ─────────
   useEffect(() => {
@@ -352,11 +382,19 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data, error } = await supabase!
           .from('quiz_sessions')
-          .select('status, current_question_index, is_paused')
+          .select('status, current_question_index, is_paused, is_active')
           .eq('id', state.sessionId)
           .single()
 
         if (data && !error) {
+          // Se o apresentador encerrou a sala (via polling)
+          if (data.is_active === false) {
+            dispatch({ type: 'RESTART_QUIZ' })
+            resetPlayer()
+            router.push('/?erro=sala-encerrada')
+            return
+          }
+
           if (
             data.status !== state.sessionStatus ||
             data.current_question_index !== state.sessionQuestionIndex ||
@@ -380,27 +418,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
     return () => {
       clearInterval(intervalId)
     }
-  }, [state.sessionId, realtimeActive, state.sessionStatus, state.sessionQuestionIndex])
-
-  // ── Player (modo local) ────────────────────────────────────────────────────
-  const setPlayer = useCallback((p: PlayerData) => {
-    setPlayerState(p)
-    try { localStorage.setItem(STORAGE_KEY_PLAYER, JSON.stringify(p)) } catch { }
-  }, [])
-
-  const markPlayerCompleted = useCallback((score: number, pct: number) => {
-    setPlayerState((prev) => {
-      if (!prev) return prev
-      const updated: PlayerData = { ...prev, hasCompleted: true, finalScore: score, finalPercentage: pct, completedAt: new Date().toISOString() }
-      try { localStorage.setItem(STORAGE_KEY_PLAYER, JSON.stringify(updated)) } catch { }
-      return updated
-    })
-  }, [])
-
-  const resetPlayer = useCallback(() => {
-    setPlayerState(null)
-    localStorage.removeItem(STORAGE_KEY_PLAYER)
-  }, [])
+  }, [state.sessionId, realtimeActive, state.sessionStatus, state.sessionQuestionIndex, resetPlayer, router])
 
   // ── Ranking local (fallback) ───────────────────────────────────────────────
   const saveToRanking = useCallback(() => {
