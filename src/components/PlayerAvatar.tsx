@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { AVATARS } from '@/data/avatars'
 
 interface PlayerAvatarProps {
@@ -62,14 +61,14 @@ export function PlayerAvatar({
   }
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={avatar.src}
       alt={`Avatar: ${avatar.name}`}
       width={px}
       height={px}
       className={`shrink-0 rounded-full object-contain ${className}`}
       style={{ width: px, height: px }}
-      priority={size === 'lg'}
     />
   )
 }

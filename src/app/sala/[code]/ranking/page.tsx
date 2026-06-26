@@ -12,6 +12,7 @@ import { getSessionByCode, getSessionRanking, closeSession, updateSessionStatus,
 import { ACHIEVEMENTS, SCORE_CONFIG } from '@/lib/scoring'
 import { useTheme } from '@/lib/theme'
 import { calculateSessionStats } from '@/lib/statistics'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import questionsData from '@/data/questions.json'
 import type { Question, Option, Phase2Option } from '@/lib/types'
 
@@ -699,9 +700,10 @@ export default function RankingSalaPage() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ type: 'spring', stiffness: 200, delay: idx * 0.05 }}
-                        className="rounded-full border border-slate-800 bg-slate-900/60 px-5 py-2.5 text-base font-semibold text-slate-200 shadow-sm"
+                        className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 pl-2 pr-5 py-2 text-base font-semibold text-slate-200 shadow-sm"
                       >
-                        🎓 {p.name}
+                        <PlayerAvatar size="sm" name={p.name} />
+                        {p.name}
                       </motion.div>
                     ))}
                   </div>
