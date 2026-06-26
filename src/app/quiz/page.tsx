@@ -7,11 +7,14 @@ import { useQuiz } from '@/lib/quiz-context'
 import { QuestionCard } from '@/components/quiz/QuestionCard'
 import { QuizProgressBar } from '@/components/quiz/QuizProgressBar'
 import { AchievementToast } from '@/components/quiz/AchievementToast'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+import { AVATAR_STORAGE_KEY } from '@/data/avatars'
 import { Maximize2, Minimize2, Home, Star, Users, Hourglass, Trophy, Flame, Sun, Moon, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useTheme } from '@/lib/theme'
+import { useAudio } from '@/lib/audio-manager'
 import type { Classification, QuestionScore } from '@/lib/types'
 
 export default function QuizPage() {
@@ -21,9 +24,21 @@ export default function QuizPage() {
     state, currentQuestion, totalQuestions, answeredCount, progressPercent, dispatch,
     lastNewAchievements, clearLastNewAchievements, realtimeActive,
   } = useQuiz()
+  const { playSfx, startBackground } = useAudio()
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [avatarId, setAvatarId] = useState<string | null>(null)
 
   const isRoomMode = !!state.sessionCode
+
+  // Lê o avatar salvo no localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AVATAR_STORAGE_KEY)
+      if (saved) setAvatarId(saved)
+    } catch {
+      // SSR
+    }
+  }, [])
 
   // 1. Redirecionamento de fase
   useEffect(() => {
@@ -48,14 +63,14 @@ export default function QuizPage() {
     return () => document.removeEventListener('fullscreenchange', handler)
   }, [])
 
-  // 2b. Preloader de mídias/áudio no lobby
+  // 2b. Inicia música de fundo ao entrar no quiz
   useEffect(() => {
-    if (isRoomMode && state.sessionStatus === 'lobby') {
-      const audio = new Audio()
-      audio.src = '/audio/quiz_music.mp3'
-      audio.preload = 'auto'
+    startBackground()
+    // Não para a música aqui — ela continua tocando no resultado também
+    return () => {
+      // Mantém a música tocando se o usuário for pra página de resultado
     }
-  }, [isRoomMode, state.sessionStatus])
+  }, [startBackground])
 
   // 3. Resposta submetida
   function handleAnswer(params: {
@@ -65,6 +80,8 @@ export default function QuizPage() {
     score: QuestionScore
   }) {
     if (!currentQuestion) return
+    // Toca SFX de acerto/erro
+    playSfx(params.isCorrect ? 'correct' : 'wrong')
     dispatch({
       type: 'ANSWER_QUESTION',
       payload: { questionId: currentQuestion.id, ...params },
@@ -135,6 +152,7 @@ export default function QuizPage() {
             className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:transition-colors dark:hover:text-slate-200"
             aria-label="Sair da Sala">
             <Home className="h-4 w-4" />
+            <PlayerAvatar avatarId={avatarId} size="sm" name={state.playerName} className="ring-1 ring-slate-200 dark:ring-slate-700" />
             <span className="text-xs font-semibold">{state.playerName}</span>
           </button>
 

@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
 import { QuizProvider } from '@/lib/quiz-context'
+import { AudioProvider } from '@/lib/audio-manager'
+import { AudioControls } from '@/components/AudioControls'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -23,8 +25,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'SENAI' }],
   openGraph: {
     title: 'QuizDida — Competência ou Capacidade?',
-    description:
-      'Quiz interativo de formação docente para docentes e coordenadores do SENAI.',
+    description: 'Quiz interativo de formação docente para docentes e coordenadores do SENAI.',
     type: 'website',
     locale: 'pt_BR',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
@@ -39,7 +40,12 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${outfit.variable} dark`}>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <QuizProvider>{children}</QuizProvider>
+        <QuizProvider>
+          <AudioProvider>
+            {children}
+            <AudioControls />
+          </AudioProvider>
+        </QuizProvider>
       </body>
     </html>
   )

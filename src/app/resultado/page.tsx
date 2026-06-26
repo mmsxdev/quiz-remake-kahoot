@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useQuiz } from '@/lib/quiz-context'
 import { ResultBreakdown } from '@/components/quiz/ResultBreakdown'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+import { AVATAR_STORAGE_KEY } from '@/data/avatars'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -12,6 +14,7 @@ import { RotateCcw, Home, Trophy, TrendingUp, Lightbulb, Star, Zap, Flame, Sun, 
 import { ACHIEVEMENTS } from '@/lib/scoring'
 import { getSessionRanking, type DbPlayer } from '@/lib/supabase-helpers'
 import { useTheme } from '@/lib/theme'
+import { useAudio } from '@/lib/audio-manager'
 
 const levelConfig = {
   iniciante: {
@@ -38,9 +41,21 @@ export default function ResultadoPage() {
     state, dispatch, totalCorrect, totalQuestions, performanceLevel, blockScores,
     saveToRanking, ranking,
   } = useQuiz()
+  const { playSfx } = useAudio()
   const savedRef = useRef(false)
   const [roomRanking, setRoomRanking] = useState<DbPlayer[]>([])
   const [loadingRoom, setLoadingRoom] = useState(false)
+  const [avatarId, setAvatarId] = useState<string | null>(null)
+
+  // Lê o avatar salvo no localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AVATAR_STORAGE_KEY)
+      if (saved) setAvatarId(saved)
+    } catch {
+      // SSR
+    }
+  }, [])
 
   useEffect(() => {
     if (state.phase === 'welcome') router.push('/')
@@ -51,8 +66,13 @@ export default function ResultadoPage() {
     if (state.phase === 'result' && !savedRef.current) {
       savedRef.current = true
       saveToRanking()
+      // Toca fanfarra se o desempenho foi alto (>= 75%)
+      const pct = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0
+      if (pct >= 75) {
+        playSfx('fanfare')
+      }
     }
-  }, [state.phase, saveToRanking])
+  }, [state.phase, saveToRanking, playSfx, totalCorrect, totalQuestions])
 
   // Busca o ranking da sala após um pequeno delay para dar tempo do progresso ser sincronizado
   useEffect(() => {
@@ -123,8 +143,14 @@ export default function ResultadoPage() {
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-16">
           {/* Score hero */}
           <motion.div className="mb-8 text-center" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <div className="mb-4 inline-flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50 text-5xl backdrop-blur-sm">
-              {config.emoji}
+            <div className="mb-4 inline-flex flex-col items-center gap-2">
+              <PlayerAvatar
+                avatarId={avatarId}
+                size="lg"
+                name={state.playerName}
+                className="ring-2 ring-offset-2 ring-offset-background ring-blue-500/40"
+              />
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">{state.playerName}</span>
             </div>
 
             <h1 className="font-display mb-1 text-5xl font-bold text-slate-800 dark:text-white md:text-6xl">

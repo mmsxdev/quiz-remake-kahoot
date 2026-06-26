@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Users, Target, ArrowRight, Trophy, Zap, Flame, RotateCcw, Plus, CheckCircle, AlertTriangle, Key, Sun, Moon } from 'lucide-react'
+import { BookOpen, ArrowRight, Trophy, Zap, RotateCcw, CheckCircle, AlertTriangle, Key, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,6 +14,9 @@ import questionsData from '@/data/questions.json'
 import { getSessionByCode, joinSession } from '@/lib/supabase-helpers'
 import { supabase, isSupabaseEnabled } from '@/lib/supabase'
 import { useTheme } from '@/lib/theme'
+import { AvatarPicker } from '@/components/AvatarPicker'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+import { AVATAR_STORAGE_KEY } from '@/data/avatars'
 
 const questions = questionsData as Question[]
 
@@ -33,8 +36,23 @@ function WelcomeForm() {
   const [verifyingCode, setVerifyingCode] = useState(false)
   const [verifiedSession, setVerifiedSession] = useState<{ id: string; title: string; timer_enabled: boolean; playerCount: number; status: string } | null>(null)
 
-  const [showRanking, setShowRanking] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Avatar picker
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
+  const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null)
+  // Callback a executar após avatar confirmado (closured sobre os dados do form)
+  const pendingStartRef = useRef<(() => Promise<void>) | null>(null)
+
+  // Lê o avatar salvo no localStorage ao montar
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AVATAR_STORAGE_KEY)
+      if (saved) setSelectedAvatarId(saved)
+    } catch {
+      // SSR
+    }
+  }, [])
 
   // 1. Auto-preenche o código se vier na URL (?sala=CODE)
   useEffect(() => {
@@ -118,32 +136,11 @@ function WelcomeForm() {
     else if (state.phase === 'result') router.push('/resultado')
   }, [state.phase, router])
 
-  async function handleStart() {
-    const trimmedName = nameInput.trim()
-    if (trimmedName.length < 2) {
-      setNameError('Digite seu nome (mínimo 2 caracteres).')
-      return
-    }
-    if (trimmedName.length > 40) {
-      setNameError('Nome muito longo (máximo 40 caracteres).')
-      return
-    }
-    setNameError('')
-
-    const code = codeInput.trim()
-
-    // Caso tente entrar em uma sala mas ela não esteja validada
-    if (code.length > 0 && !verifiedSession) {
-      setCodeError('Valide o código da sala antes de iniciar.')
-      return
-    }
-
+  async function executeStart(trimmedName: string, code: string) {
     setIsLoading(true)
-
     try {
       if (verifiedSession && code.length > 0) {
         // --- MODO SALA COMPARTILHADA (Supabase) ---
-        // Verificar se jogador já existe na sala para evitar duplicados / responder 2 vezes
         const { data: existingPlayer } = await supabase!
           .from('quiz_players')
           .select('id, completed')
@@ -153,7 +150,6 @@ function WelcomeForm() {
 
         if (existingPlayer) {
           if (existingPlayer.completed) {
-            // Se já concluiu e é o mesmo player local, restaura fase e vai pro resultado
             if (state.playerId === existingPlayer.id) {
               dispatch({ type: 'RESTORE_STATE', payload: { ...state, phase: 'result' } })
               router.push('/resultado')
@@ -162,20 +158,17 @@ function WelcomeForm() {
               throw new Error('Este participante já concluiu o quiz nesta sala.')
             }
           }
-          
           if (state.playerId !== existingPlayer.id) {
             throw new Error('Este nome já está sendo usado nesta sala. Use outro nome.')
           }
         }
 
-        // 1. Registra o jogador no banco de dados da sessão se não existir ainda
         const dbPlayer = existingPlayer || await joinSession({
           sessionId: verifiedSession.id,
           playerName: trimmedName,
           totalQuestions: questions.length,
         })
 
-        // 2. Inicia o quiz no contexto associando os IDs do Supabase
         dispatch({
           type: 'START_QUIZ',
           payload: {
@@ -192,7 +185,7 @@ function WelcomeForm() {
         const nameKey = generateNameKey(trimmedName)
         const newPlayer: PlayerData = { name: trimmedName, nameKey, hasCompleted: false }
         setPlayer(newPlayer)
-        
+
         dispatch({
           type: 'START_QUIZ',
           payload: {
@@ -201,7 +194,7 @@ function WelcomeForm() {
             sessionCode: null,
             sessionId: null,
             playerId: null,
-            timerEnabled: false, // Local-only sempre sem timer por padrão
+            timerEnabled: false,
           },
         })
       }
@@ -212,6 +205,42 @@ function WelcomeForm() {
       setNameError(err.message || 'Erro ao entrar na sessão. Nome já cadastrado nesta sala?')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function handleStart() {
+    const trimmedName = nameInput.trim()
+    if (trimmedName.length < 2) {
+      setNameError('Digite seu nome (mínimo 2 caracteres).')
+      return
+    }
+    if (trimmedName.length > 40) {
+      setNameError('Nome muito longo (máximo 40 caracteres).')
+      return
+    }
+    setNameError('')
+
+    const code = codeInput.trim()
+    if (code.length > 0 && !verifiedSession) {
+      setCodeError('Valide o código da sala antes de iniciar.')
+      return
+    }
+
+    // Se avatar já escolhido anteriormente, executa direto. Caso contrário, abre picker.
+    if (selectedAvatarId) {
+      await executeStart(trimmedName, code)
+    } else {
+      pendingStartRef.current = () => executeStart(trimmedName, code)
+      setShowAvatarPicker(true)
+    }
+  }
+
+  async function handleAvatarConfirm(avatarId: string) {
+    setSelectedAvatarId(avatarId)
+    setShowAvatarPicker(false)
+    if (pendingStartRef.current) {
+      await pendingStartRef.current()
+      pendingStartRef.current = null
     }
   }
 
@@ -402,6 +431,27 @@ function WelcomeForm() {
 
             </div>
 
+            {/* Indicador de avatar já selecionado */}
+            {selectedAvatarId && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2"
+              >
+                <PlayerAvatar avatarId={selectedAvatarId} size="sm" name={nameInput} />
+                <span className="text-xs text-slate-500 dark:text-slate-400">
+                  Avatar selecionado •{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowAvatarPicker(true)}
+                    className="text-blue-500 hover:underline font-medium"
+                  >
+                    Trocar
+                  </button>
+                </span>
+              </motion.div>
+            )}
+
             <Button onClick={handleStart} size="lg" disabled={nameInput.trim().length < 2 || codeInput.trim().length < 6 || isLoading || verifyingCode || !verifiedSession || !!codeError}
               className="w-full bg-blue-600 py-6 text-lg font-semibold shadow-lg shadow-blue-900/40 hover:bg-blue-700 disabled:opacity-50">
               {isLoading ? 'Entrando...' : 'Entrar na Sala'} 
@@ -416,6 +466,9 @@ function WelcomeForm() {
       <motion.p className="mt-12 text-center text-[10px] text-slate-600 uppercase tracking-widest font-mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
         Metodologia SENAI de Educação Profissional • MSEP
       </motion.p>
+
+      {/* Modal de seleção de avatar */}
+      <AvatarPicker open={showAvatarPicker} onConfirm={handleAvatarConfirm} />
     </div>
   )
 }
