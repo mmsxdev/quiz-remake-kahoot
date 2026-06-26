@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Users, CheckCircle, Flame, Star, AlertCircle, ShieldAlert, Ban, QrCode, Home, Play, ArrowRight, Check, Eye, Volume2, VolumeX, Music, Sun, Moon, Pause, PlayCircle, ExternalLink, Copy } from 'lucide-react'
+import { Trophy, Users, CheckCircle, Flame, Star, AlertCircle, ShieldAlert, Ban, QrCode, Home, Play, ArrowRight, Check, Eye, Sun, Moon, Pause, PlayCircle, ExternalLink, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -29,11 +29,6 @@ export default function RankingSalaPage() {
   const [players, setPlayers] = useState<DbPlayer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Audio e Trilha Sonora
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [playing, setPlaying] = useState(false)
-  const [maxVolume, setMaxVolume] = useState(0.25)
 
   // Estados locais da apresentação
   const [timeLeft, setTimeLeft] = useState(30)
@@ -81,31 +76,6 @@ export default function RankingSalaPage() {
       alert(`Erro ao alterar status de pausa: ${err.message}`)
     }
   }
-
-  // ── Persistência de Preferências do Host ──
-  useEffect(() => {
-    try {
-      const savedVolume = localStorage.getItem('quizdida_host_volume')
-      if (savedVolume !== null) setMaxVolume(parseFloat(savedVolume))
-
-      const savedPlaying = localStorage.getItem('quizdida_host_playing')
-      if (savedPlaying !== null) setPlaying(savedPlaying === 'true')
-    } catch (e) {
-      console.error('Erro ao ler LocalStorage:', e)
-    }
-  }, [])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('quizdida_host_volume', maxVolume.toString())
-    } catch (e) {}
-  }, [maxVolume])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('quizdida_host_playing', playing.toString())
-    } catch (e) {}
-  }, [playing])
 
   // ── 1. Busca inicial da sessão e ranking (com Heartbeat/Host Único) ──
   useEffect(() => {
@@ -263,27 +233,6 @@ export default function RankingSalaPage() {
     setTimeLeft(30) // reseta timer visual
     setTimerActive(false)
   }, [session?.current_question_index, session?.status])
-
-  // ── Controle do Player de Áudio ──
-  useEffect(() => {
-    if (!audioRef.current) return
-    if (playing && !session?.is_paused) {
-      audioRef.current.play().catch((err) => {
-        console.log('Autoplay bloqueado. Aguardando clique do usuário.', err)
-        setPlaying(false)
-      })
-    } else {
-      audioRef.current.pause()
-    }
-  }, [playing, session?.is_paused])
-
-  // Lógica de volume dinâmico proporcional
-  useEffect(() => {
-    if (!audioRef.current) return
-    const isExplaining = session?.status === 'question' && revealed
-    const targetVolume = isExplaining ? maxVolume * 0.15 : maxVolume
-    audioRef.current.volume = targetVolume
-  }, [session?.status, revealed, maxVolume])
 
   // 4. Ações do Apresentador (Host)
   async function handleStartQuiz() {
@@ -530,29 +479,6 @@ export default function RankingSalaPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Controles de Música */}
-            <div className="flex items-center gap-2 border-r border-slate-200 dark:border-slate-800 pr-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setPlaying(!playing)}
-                className="h-8 w-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 rounded-full"
-                title={playing ? 'Pausar música' : 'Tocar música'}
-              >
-                {playing ? <Volume2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-pulse" /> : <VolumeX className="h-4 w-4" />}
-              </Button>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={maxVolume}
-                onChange={(e) => setMaxVolume(parseFloat(e.target.value))}
-                className="w-16 h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                title="Volume da música"
-              />
-            </div>
-
             {/* Alternador de Tema */}
             <Button
               variant="ghost"
@@ -1132,13 +1058,6 @@ export default function RankingSalaPage() {
       <footer className="relative z-10 py-4 border-t border-slate-200/60 dark:border-slate-900/60 bg-slate-100/50 dark:bg-slate-950 text-center text-[10px] text-slate-500 uppercase tracking-widest font-mono">
         Metodologia SENAI de Educação Profissional • MSEP
       </footer>
-
-      {/* Elemento de Áudio Oculto */}
-      <audio
-        ref={audioRef}
-        src="/audio/quiz_music.mp3"
-        loop
-      />
 
       {/* Modal de Confirmação de Encerramento */}
       {showCloseConfirmModal && (
