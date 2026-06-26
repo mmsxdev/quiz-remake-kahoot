@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS quiz_players (
   id                  uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
   session_id          uuid        NOT NULL REFERENCES quiz_sessions(id) ON DELETE CASCADE,
   name                varchar(100) NOT NULL,
+  avatar_id           varchar(50),
   score               integer     NOT NULL DEFAULT 0,
   correct_answers     integer     NOT NULL DEFAULT 0,
   total_questions     integer     NOT NULL DEFAULT 18,
@@ -80,10 +81,11 @@ ALTER PUBLICATION supabase_realtime ADD TABLE quiz_sessions;
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- MIGRAÇÕES ADICIONAIS: PAUSE, HEARTBEAT E LOGS DE AUDITORIA
+-- MIGRAÇÕES ADICIONAIS: PAUSE, HEARTBEAT, LOGS E AVATARES
 -- -----------------------------------------------------------------------------
 ALTER TABLE quiz_sessions ADD COLUMN IF NOT EXISTS is_paused boolean NOT NULL DEFAULT false;
 ALTER TABLE quiz_sessions ADD COLUMN IF NOT EXISTS last_host_ping timestamptz;
+ALTER TABLE quiz_players ADD COLUMN IF NOT EXISTS avatar_id varchar(50);
 
 CREATE TABLE IF NOT EXISTS quiz_logs (
   id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),

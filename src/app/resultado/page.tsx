@@ -277,9 +277,12 @@ export default function ResultadoPage() {
                               {medal || `${idx + 1}º`}
                             </td>
                             <td className="py-2.5 px-3">
-                              <span className={`font-semibold ${isMe ? 'text-blue-600 dark:text-blue-300 font-bold' : 'text-slate-800 dark:text-slate-300'}`}>
-                                {p.name} {isMe && ' (Você)'}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <PlayerAvatar avatarId={p.avatar_id} size="sm" name={p.name} />
+                                <span className={`font-semibold ${isMe ? 'text-blue-600 dark:text-blue-300 font-bold' : 'text-slate-800 dark:text-slate-300'}`}>
+                                  {p.name} {isMe && ' (Você)'}
+                                </span>
+                              </div>
                             </td>
                             <td className="py-2.5 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
                               {p.score.toLocaleString()}

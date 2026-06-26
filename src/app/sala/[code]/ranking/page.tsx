@@ -12,9 +12,9 @@ import { getSessionByCode, getSessionRanking, closeSession, updateSessionStatus,
 import { ACHIEVEMENTS, SCORE_CONFIG } from '@/lib/scoring'
 import { useTheme } from '@/lib/theme'
 import { calculateSessionStats } from '@/lib/statistics'
-import { PlayerAvatar } from '@/components/PlayerAvatar'
 import questionsData from '@/data/questions.json'
 import type { Question, Option, Phase2Option } from '@/lib/types'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 
 const questions = questionsData as Question[]
 
@@ -700,10 +700,10 @@ export default function RankingSalaPage() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ type: 'spring', stiffness: 200, delay: idx * 0.05 }}
-                        className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 pl-2 pr-5 py-2 text-base font-semibold text-slate-200 shadow-sm"
+                        className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100/30 dark:bg-slate-900/60 pl-2 pr-4 py-1.5 text-base font-semibold text-slate-800 dark:text-slate-200 shadow-sm"
                       >
-                        <PlayerAvatar size="sm" name={p.name} />
-                        {p.name}
+                        <PlayerAvatar avatarId={p.avatar_id} size="sm" name={p.name} />
+                        <span>{p.name}</span>
                       </motion.div>
                     ))}
                   </div>
@@ -896,6 +896,7 @@ export default function RankingSalaPage() {
                           <span className="w-8 text-center text-lg font-black tracking-tight select-none">
                             {medal || `${index + 1}`}
                           </span>
+                          <PlayerAvatar avatarId={player.avatar_id} size="sm" name={player.name} />
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-white text-base">
@@ -955,7 +956,7 @@ export default function RankingSalaPage() {
               </div>
 
               {/* Podium Visual Animado */}
-              <div className="flex flex-row justify-center items-end gap-4 sm:gap-8 max-w-4xl mx-auto h-[350px] pt-10">
+              <div className="flex flex-row justify-center items-end gap-4 sm:gap-8 max-w-4xl mx-auto h-[390px] pt-4">
                 {podiumPlayers.map((player, i) => {
                   // O array está ordenado [2º, 1º, 3º] para renderização direta da esquerda para a direita.
                   const isFirst = player.id === players[0]?.id
@@ -967,6 +968,7 @@ export default function RankingSalaPage() {
                   let colorClass = 'bg-gradient-to-t from-slate-900 to-amber-500/20 border-amber-500/40'
                   let textClass = 'text-amber-400'
                   let delay = 0.4
+                  let ringColor = 'ring-amber-500'
 
                   if (isSecond) {
                     rankLabel = '2º'
@@ -974,12 +976,14 @@ export default function RankingSalaPage() {
                     colorClass = 'bg-gradient-to-t from-slate-900 to-slate-300/20 border-slate-300/30'
                     textClass = 'text-slate-300'
                     delay = 0.2
+                    ringColor = 'ring-slate-300'
                   } else if (isThird) {
                     rankLabel = '3º'
                     height = 'h-28'
                     colorClass = 'bg-gradient-to-t from-slate-900 to-amber-700/20 border-amber-700/30'
                     textClass = 'text-amber-600'
                     delay = 0.6
+                    ringColor = 'ring-amber-700'
                   }
 
                   return (
@@ -990,6 +994,16 @@ export default function RankingSalaPage() {
                       transition={{ type: 'spring', stiffness: 100, damping: 15, delay }}
                       className="flex flex-col items-center w-28 sm:w-44"
                     >
+                      {/* Avatar do Jogador no Pódio */}
+                      <div className="mb-3">
+                        <PlayerAvatar 
+                          avatarId={player.avatar_id} 
+                          size="md" 
+                          name={player.name} 
+                          className={`ring-4 ring-offset-2 ring-offset-slate-950 ${ringColor}`} 
+                        />
+                      </div>
+
                       {/* Nome e Pontos do Aluno */}
                       <div className="text-center mb-3">
                         <p className="text-sm sm:text-base font-bold text-white truncate max-w-[100px] sm:max-w-[150px]">
@@ -1066,13 +1080,16 @@ export default function RankingSalaPage() {
                                   {medal || `${idx + 1}º`}
                                 </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-slate-200">{p.name}</span>
-                                    {p.max_streak >= 3 && (
-                                      <span className="rounded bg-orange-500/10 border border-orange-500/20 px-1 py-0.5 text-[9px] font-bold text-orange-400">
-                                        🔥 {p.max_streak}x
-                                      </span>
-                                    )}
+                                  <div className="flex items-center gap-3">
+                                    <PlayerAvatar avatarId={p.avatar_id} size="sm" name={p.name} />
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-semibold text-slate-200">{p.name}</span>
+                                      {p.max_streak >= 3 && (
+                                        <span className="rounded bg-orange-500/10 border border-orange-500/20 px-1 py-0.5 text-[9px] font-bold text-orange-400">
+                                          🔥 {p.max_streak}x
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
                                 </td>
                                 <td className="px-6 py-4 text-center font-mono font-bold text-blue-400">

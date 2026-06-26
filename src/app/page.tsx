@@ -161,12 +161,21 @@ function WelcomeForm() {
           if (state.playerId !== existingPlayer.id) {
             throw new Error('Este nome já está sendo usado nesta sala. Use outro nome.')
           }
+
+          // Atualiza o avatar_id caso o participante já esteja registrado mas tenha escolhido/trocado o avatar
+          if (selectedAvatarId) {
+            await supabase!
+              .from('quiz_players')
+              .update({ avatar_id: selectedAvatarId })
+              .eq('id', existingPlayer.id)
+          }
         }
 
         const dbPlayer = existingPlayer || await joinSession({
           sessionId: verifiedSession.id,
           playerName: trimmedName,
           totalQuestions: questions.length,
+          avatarId: selectedAvatarId,
         })
 
         dispatch({

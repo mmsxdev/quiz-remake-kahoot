@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 import {
@@ -104,8 +105,7 @@ export function AvatarPicker({ open, onConfirm }: AvatarPickerProps) {
                   )}
                 </AnimatePresence>
 
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={avatar.src}
                   alt={`Avatar ${avatar.name}`}
                   width={80}

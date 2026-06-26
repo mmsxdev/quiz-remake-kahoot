@@ -31,6 +31,7 @@ export interface DbPlayer {
   completed_at: string | null
   created_at: string
   last_answered_index: number
+  avatar_id?: string | null
 }
 
 // ─── Geração de código de sessão ──────────────────────────────────────────────
@@ -119,6 +120,7 @@ export async function joinSession(params: {
   sessionId: string
   playerName: string
   totalQuestions: number
+  avatarId?: string | null
 }): Promise<DbPlayer> {
   if (!supabase) throw new Error('Supabase não configurado')
 
@@ -128,6 +130,7 @@ export async function joinSession(params: {
       session_id: params.sessionId,
       name: params.playerName.trim(),
       total_questions: params.totalQuestions,
+      avatar_id: params.avatarId || null,
     })
     .select()
     .single()
