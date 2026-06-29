@@ -234,13 +234,13 @@ export default function QuizPage() {
                 <Users className="h-10 w-10" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-white">Você está conectado!</h2>
-                <p className="text-slate-400 max-w-sm mx-auto">
-                  Olá, <strong className="text-white">{state.playerName}</strong>. Aguarde o apresentador iniciar a partida no projetor.
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Você está conectado!</h2>
+                <p className="text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
+                  Olá, <strong className="text-slate-900 dark:text-white">{state.playerName}</strong>. Aguarde o apresentador iniciar a partida no projetor.
                 </p>
               </div>
-              <div className="rounded-lg bg-slate-900/60 border border-slate-800 p-4 w-full max-w-xs text-xs text-slate-500">
-                Código da Sala: <strong className="text-blue-400 font-mono tracking-widest">{state.sessionCode}</strong>
+              <div className="rounded-lg bg-slate-100/50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-4 w-full max-w-xs text-xs text-slate-600 dark:text-slate-500">
+                Código da Sala: <strong className="text-blue-600 dark:text-blue-400 font-mono tracking-widest">{state.sessionCode}</strong>
               </div>
             </motion.div>
           )}
@@ -258,21 +258,21 @@ export default function QuizPage() {
                 <Trophy className="h-10 w-10 animate-bounce" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-white">Veja a tela de projeção!</h2>
-                <p className="text-slate-400 max-w-sm mx-auto">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Veja a tela de projeção!</h2>
+                <p className="text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
                   O placar parcial está sendo exibido na tela principal. Veja quem está liderando!
                 </p>
               </div>
 
               {/* Informações rápidas do aluno */}
-              <div className="grid grid-cols-2 gap-4 w-full max-w-sm bg-slate-900/40 p-4 border border-slate-800 rounded-xl">
-                <div className="text-center border-r border-slate-800">
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Sua pontuação</p>
-                  <p className="text-xl font-bold text-blue-400 mt-1">{state.totalScore}</p>
+              <div className="grid grid-cols-2 gap-4 w-full max-w-sm bg-slate-100/50 dark:bg-slate-900/40 p-4 border border-slate-200 dark:border-slate-800 rounded-xl">
+                <div className="text-center border-r border-slate-200 dark:border-slate-800">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-500 uppercase tracking-wider font-semibold">Sua pontuação</p>
+                  <p className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-1">{state.totalScore}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Streak atual</p>
-                  <p className="text-xl font-bold text-orange-400 mt-1 flex items-center justify-center gap-1">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-500 uppercase tracking-wider font-semibold">Streak atual</p>
+                  <p className="text-xl font-bold text-orange-600 dark:text-orange-400 mt-1 flex items-center justify-center gap-1">
                     <Flame className="h-4 w-4" /> {state.currentStreak}x
                   </p>
                 </div>

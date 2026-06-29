@@ -563,12 +563,12 @@ export default function RankingSalaPage() {
             >
               {/* Painel do Código e Instruções de Acesso */}
               <div className="lg:col-span-1 space-y-4">
-                <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-2xl p-6 text-center">
-                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Como participar?</p>
-                  <p className="text-sm text-slate-300 font-medium leading-relaxed">
+                <Card className="border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 backdrop-blur-md shadow-2xl p-6 text-center">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mb-1">Como participar?</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                     Acesse pelo celular usando o código abaixo:
                   </p>
-                  <div className="font-display text-5xl font-black tracking-widest text-blue-400 my-4 select-all">
+                  <div className="font-display text-5xl font-black tracking-widest text-blue-600 dark:text-blue-400 my-4 select-all">
                     {session.code}
                   </div>
                   <div className="flex justify-center my-4">
@@ -597,7 +597,7 @@ export default function RankingSalaPage() {
                     <p className="text-xs text-amber-500 font-bold flex items-center justify-center gap-1.5">
                       <AlertCircle className="h-4 w-4" /> Recomendação de Projeção
                     </p>
-                    <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-xs mx-auto">
                       Para uma melhor experiência no projetor, ative o modo Tela Cheia.
                     </p>
                     <Button
@@ -614,8 +614,8 @@ export default function RankingSalaPage() {
 
               {/* Lista de Alunos conectados no Lobby */}
               <div className="lg:col-span-2 space-y-4">
-                <h2 className="text-lg font-bold text-slate-300 flex items-center gap-2">
-                  <Users className="h-5 w-5 text-blue-400" /> Participantes na Sala
+                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-300 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-blue-500 dark:text-blue-400" /> Participantes na Sala
                 </h2>
                 
                 {players.length > 0 ? (
@@ -634,10 +634,10 @@ export default function RankingSalaPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-20 border border-dashed border-slate-800 rounded-2xl bg-slate-900/10">
+                  <div className="flex flex-col items-center justify-center py-20 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-100/50 dark:bg-slate-900/10">
                     <Users className="h-10 w-10 text-slate-500 animate-pulse mb-3" />
-                    <p className="text-base text-slate-400 font-medium">Aguardando participantes entrarem...</p>
-                    <p className="text-xs text-slate-600 mt-1">Insira seu nome e código para aparecer aqui.</p>
+                    <p className="text-base text-slate-600 dark:text-slate-400 font-medium">Aguardando participantes entrarem...</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-600 mt-1">Insira seu nome e código para aparecer aqui.</p>
                   </div>
                 )}
               </div>
@@ -658,7 +658,7 @@ export default function RankingSalaPage() {
                 <Badge className="bg-blue-500/10 text-blue-300 border-blue-500/20 text-xs py-1 px-3">
                   Questão {session.current_question_index + 1} de {questions.length} • Bloco {activeQuestion.block}
                 </Badge>
-                <h2 className="font-display text-3xl font-extrabold text-white sm:text-4xl leading-snug">
+                <h2 className="font-display text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl leading-snug">
                   {activeQuestion.text}
                 </h2>
               </div>
@@ -668,7 +668,7 @@ export default function RankingSalaPage() {
                 
                 {/* Timer gigante */}
                 {session.timer_enabled && !revealed ? (
-                  <div className="relative flex items-center justify-center h-40 w-40 rounded-full border-4 border-slate-800 bg-slate-900/40">
+                  <div className="relative flex items-center justify-center h-40 w-40 rounded-full border-4 border-slate-200 dark:border-slate-800 bg-slate-100/30 dark:bg-slate-900/40">
                     <div className="text-center">
                       <span className={`text-6xl font-black tracking-tight ${timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-blue-400'}`}>
                         {timeLeft}
@@ -686,7 +686,7 @@ export default function RankingSalaPage() {
                 )}
 
                 {/* Submissões */}
-                <div className="flex flex-col items-center justify-center h-40 w-40 rounded-full border-4 border-slate-800 bg-slate-900/40">
+                <div className="flex flex-col items-center justify-center h-40 w-40 rounded-full border-4 border-slate-200 dark:border-slate-800 bg-slate-100/30 dark:bg-slate-900/40">
                   <div className="text-center">
                     <span className="text-5xl font-black tracking-tight text-violet-400">
                       {answeredPlayersCount}
@@ -705,11 +705,11 @@ export default function RankingSalaPage() {
                     /* Aguardando finalização, mostra opções normais */
                     <motion.div key="options" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {(activeQuestion.type === 'two-phase' ? activeQuestion.phase2?.options ?? [] : activeQuestion.options).map((opt, i) => (
-                        <div key={opt.id} className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/30 px-5 py-4">
-                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 font-mono text-sm font-bold text-slate-400 select-none">
+                        <div key={opt.id} className="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/30 dark:bg-slate-900/30 px-5 py-4">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-800 font-mono text-sm font-bold text-slate-600 dark:text-slate-400 select-none">
                             {String.fromCharCode(65 + i)}
                           </span>
-                          <span className="text-slate-300 font-medium text-sm sm:text-base leading-relaxed">{opt.text}</span>
+                          <span className="text-slate-800 dark:text-slate-300 font-medium text-sm sm:text-base leading-relaxed">{opt.text}</span>
                         </div>
                       ))}
                     </motion.div>
@@ -733,22 +733,22 @@ export default function RankingSalaPage() {
                             <div key={opt.id} className="space-y-1">
                               <div className="flex items-center justify-between text-sm">
                                 <span className="flex items-center gap-2 font-medium">
-                                  <span className={`flex h-6 w-6 items-center justify-center rounded font-mono text-xs font-bold ${isOptCorrect ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
+                                  <span className={`flex h-6 w-6 items-center justify-center rounded font-mono text-xs font-bold ${isOptCorrect ? 'bg-emerald-500 text-slate-950' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
                                     {String.fromCharCode(65 + i)}
                                   </span>
-                                  <span className={isOptCorrect ? 'text-emerald-400 font-bold' : 'text-slate-300'}>
+                                  <span className={isOptCorrect ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-800 dark:text-slate-300'}>
                                     {opt.text}
                                   </span>
-                                  {isOptCorrect && <Check className="h-4 w-4 text-emerald-400" />}
+                                  {isOptCorrect && <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
                                 </span>
-                                <span className="font-mono text-slate-400">{votes} votos ({pct}%)</span>
+                                <span className="font-mono text-slate-500 dark:text-slate-400">{votes} votos ({pct}%)</span>
                               </div>
                               <div className="h-3 w-full bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                                 <motion.div
                                   initial={{ width: 0 }}
                                   animate={{ width: `${pct}%` }}
                                   transition={{ duration: 0.8, ease: 'easeOut' }}
-                                  className={`h-full rounded-full ${isOptCorrect ? 'bg-emerald-500' : 'bg-slate-700'}`}
+                                  className={`h-full rounded-full ${isOptCorrect ? 'bg-emerald-500' : 'bg-slate-350 dark:bg-slate-700'}`}
                                 />
                               </div>
                             </div>
@@ -758,8 +758,8 @@ export default function RankingSalaPage() {
 
                       {/* Explicativo Pedagógico */}
                       <Card className="border-blue-900/30 bg-blue-950/10 p-5 mt-6">
-                        <p className="text-sm font-semibold text-blue-400 mb-1.5">Justificativa da Questão:</p>
-                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{activeQuestion.explanation}</p>
+                        <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-1.5">Justificativa da Questão:</p>
+                        <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-300 leading-relaxed">{activeQuestion.explanation}</p>
                       </Card>
                     </motion.div>
                   )}
@@ -767,7 +767,7 @@ export default function RankingSalaPage() {
               </div>
 
               {/* Botão de Controle do Host no rodapé */}
-              <div className="flex justify-center pt-4 border-t border-slate-900">
+              <div className="flex justify-center pt-4 border-t border-slate-200 dark:border-slate-800">
                 {!revealed ? (
                   <Button onClick={handleRevealAnswer} className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 shadow-lg">
                     <Eye className="mr-2 h-5 w-5" /> Encerrar Tempo / Revelar Resposta
@@ -791,10 +791,10 @@ export default function RankingSalaPage() {
               className="space-y-8"
             >
               <div className="text-center">
-                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs py-1 px-3 mb-2">
+                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs py-1 px-3 mb-2">
                   Placar da Rodada
                 </Badge>
-                <h2 className="text-3xl font-extrabold text-white font-display">Leaderboard — Top 5</h2>
+                <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white font-display">Leaderboard — Top 5</h2>
               </div>
 
               <div className="max-w-3xl mx-auto space-y-3 relative min-h-[300px]">
@@ -814,8 +814,8 @@ export default function RankingSalaPage() {
                         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                         className={`flex items-center justify-between rounded-xl border px-5 py-4 transition-colors ${
                           isTop3
-                            ? 'border-blue-500/20 bg-blue-950/10 backdrop-blur-sm'
-                            : 'border-slate-800 bg-slate-900/30'
+                            ? 'border-blue-500/20 bg-blue-500/5 dark:bg-blue-950/10 backdrop-blur-sm'
+                            : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30'
                         }`}
                       >
                         <div className="flex items-center gap-4">
@@ -825,7 +825,7 @@ export default function RankingSalaPage() {
                           <PlayerAvatar avatarId={player.avatar_id} size="sm" name={player.name} />
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-white text-base">
+                              <span className="font-semibold text-slate-800 dark:text-white text-base">
                                 {player.name}
                               </span>
                               {player.max_streak >= 3 && (
@@ -839,12 +839,12 @@ export default function RankingSalaPage() {
 
                         <div className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <span className="font-mono text-lg font-extrabold text-blue-400">
+                            <span className="font-mono text-lg font-extrabold text-blue-600 dark:text-blue-400">
                               {player.score.toLocaleString()}
                             </span>
                             <span className="text-xs text-slate-500">pts</span>
                           </div>
-                          <p className="text-xs text-slate-400">
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
                             {player.correct_answers} acertos ({pct}%)
                           </p>
                         </div>
@@ -855,7 +855,7 @@ export default function RankingSalaPage() {
               </div>
 
               {/* Botões do Rodapé */}
-              <div className="flex justify-center pt-4 border-t border-slate-900">
+              <div className="flex justify-center pt-4 border-t border-slate-200 dark:border-slate-800">
                 <Button onClick={handleNextQuestion} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 shadow-lg">
                   {session.current_question_index + 1 >= questions.length ? 'Finalizar Quiz' : 'Próxima Questão'} <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -875,8 +875,8 @@ export default function RankingSalaPage() {
                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 border border-amber-500/20 text-3xl">
                   🏆
                 </div>
-                <h2 className="text-4xl font-extrabold tracking-tight text-white font-display sm:text-5xl">Quiz Finalizado!</h2>
-                <p className="text-slate-400 max-w-md mx-auto">
+                <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display sm:text-5xl">Quiz Finalizado!</h2>
+                <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
                   Excelente formação! Parabéns a todos os participantes. Confira o pódio final do QuizDida:
                 </p>
               </div>
@@ -891,23 +891,23 @@ export default function RankingSalaPage() {
 
                   let rankLabel = '1º'
                   let height = 'h-56'
-                  let colorClass = 'bg-gradient-to-t from-slate-900 to-amber-500/20 border-amber-500/40'
-                  let textClass = 'text-amber-400'
+                  let colorClass = 'bg-gradient-to-t from-slate-100 dark:from-slate-900 to-amber-500/20 border-amber-500/40'
+                  let textClass = 'text-amber-600 dark:text-amber-400'
                   let delay = 0.4
                   let ringColor = 'ring-amber-500'
 
                   if (isSecond) {
                     rankLabel = '2º'
                     height = 'h-40'
-                    colorClass = 'bg-gradient-to-t from-slate-900 to-slate-300/20 border-slate-300/30'
-                    textClass = 'text-slate-300'
+                    colorClass = 'bg-gradient-to-t from-slate-100 dark:from-slate-900 to-slate-300/20 border-slate-300/30'
+                    textClass = 'text-slate-600 dark:text-slate-350'
                     delay = 0.2
                     ringColor = 'ring-slate-300'
                   } else if (isThird) {
                     rankLabel = '3º'
                     height = 'h-28'
-                    colorClass = 'bg-gradient-to-t from-slate-900 to-amber-700/20 border-amber-700/30'
-                    textClass = 'text-amber-600'
+                    colorClass = 'bg-gradient-to-t from-slate-100 dark:from-slate-900 to-amber-700/20 border-amber-700/30'
+                    textClass = 'text-amber-700 dark:text-amber-600'
                     delay = 0.6
                     ringColor = 'ring-amber-700'
                   }
@@ -926,26 +926,26 @@ export default function RankingSalaPage() {
                           avatarId={player.avatar_id} 
                           size="md" 
                           name={player.name} 
-                          className={`ring-4 ring-offset-2 ring-offset-slate-950 ${ringColor}`} 
+                          className={`ring-4 ring-offset-2 ring-offset-slate-100 dark:ring-offset-slate-950 ${ringColor}`} 
                         />
                       </div>
 
                       {/* Nome e Pontos do Aluno */}
                       <div className="text-center mb-3">
-                        <p className="text-sm sm:text-base font-bold text-white truncate max-w-[100px] sm:max-w-[150px]">
+                        <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-white truncate max-w-[100px] sm:max-w-[150px]">
                           {player.name}
                         </p>
-                        <p className="text-xs font-mono font-bold text-blue-400">
+                        <p className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
                           {player.score.toLocaleString()} pts
                         </p>
                       </div>
 
                       {/* Pedestal */}
                       <div className={`w-full ${height} rounded-t-2xl border ${colorClass} flex flex-col justify-between p-4 shadow-xl`}>
-                        <div className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 font-black ${textClass} text-lg`}>
+                        <div className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-950 font-black ${textClass} text-lg`}>
                           {rankLabel}
                         </div>
-                        <div className="text-center font-display font-black text-2xl tracking-tighter opacity-10">
+                        <div className="text-center font-display font-black text-2xl tracking-tighter opacity-10 text-slate-800 dark:text-white">
                           SENAI
                         </div>
                       </div>

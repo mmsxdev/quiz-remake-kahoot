@@ -424,7 +424,7 @@ function WelcomeForm() {
                       <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
                       <div>
                         <p className="font-semibold text-white">{verifiedSession.title}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 ">
                           {verifiedSession.playerCount} participantes ativos • {verifiedSession.timer_enabled ? '⚡ Timer ativo' : '⏳ Sem tempo'}
                         </p>
                       </div>

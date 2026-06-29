@@ -329,12 +329,12 @@ export function QuestionCard({
       </div>
 
       {/* Question text */}
-      <h2 className="text-xl leading-relaxed font-semibold text-white md:text-2xl">{question.text}</h2>
+      <h2 className="text-xl leading-relaxed font-semibold text-slate-800 dark:text-white md:text-2xl">{question.text}</h2>
 
       {/* ── FASE 1: Classificação ───────────────────────────────────────────────── */}
       {isTwoPhase && (
         <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium text-slate-400">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {phase1Revealed ? 'Classificação escolhida:' : 'Classifique a afirmativa:'}
           </p>
           <div className="flex gap-3" role="radiogroup" aria-label="Classificar como Competência ou Capacidade">
@@ -360,18 +360,18 @@ export function QuestionCard({
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
                 className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium ${
                   phase1Correct
-                    ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                    : 'border border-amber-500/30 bg-amber-500/10 text-amber-300'
+                    ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
+                    : 'border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-300'
                 }`}
               >
                 {phase1Correct ? (
-                  <><CheckCircle2 className="h-4 w-4 shrink-0" /> Correto! Agora justifique sua resposta:</>
+                  <><CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" /> Correto! Agora justifique sua resposta:</>
                 ) : (
                   <>
-                    <XCircle className="h-4 w-4 shrink-0" />
+                    <XCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                     {phase1Selection === null
-                      ? <>Tempo esgotado! A resposta correta é <strong className="text-white">{question.correctClassification}</strong>. Por quê?</>
-                      : <>A classificação correta é <strong className="text-white">{question.correctClassification}</strong>. Mas por quê?</>
+                      ? <>Tempo esgotado! A resposta correta é <strong className="text-emerald-800 dark:text-white">{question.correctClassification}</strong>. Por quê?</>
+                      : <>A classificação correta é <strong className="text-amber-800 dark:text-white">{question.correctClassification}</strong>. Mas por quê?</>
                     }
                   </>
                 )}
@@ -388,8 +388,8 @@ export function QuestionCard({
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.15 }}
             className="flex flex-col gap-3"
           >
-            <p className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-              <HelpCircle className="h-4 w-4 text-blue-400" />
+            <p className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <HelpCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               {question.phase2!.prompt}
             </p>
             <div className="flex flex-col gap-2.5" role="radiogroup" aria-label="Selecione a justificativa">
@@ -431,18 +431,18 @@ export function QuestionCard({
           >
             <div className="mb-3 flex items-center gap-2">
               {isCorrect ? (
-                <><CheckCircle2 className="h-5 w-5 text-emerald-400" />
-                  <span className="font-semibold text-emerald-400">
+                <><CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                     {isTwoPhase ? 'Perfeito! Classificação e justificativa corretas.' : 'Correto!'}
                   </span></>
               ) : (
-                <><XCircle className="h-5 w-5 text-red-400" />
-                  <span className="font-semibold text-red-400">
+                <><XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                  <span className="font-semibold text-red-600 dark:text-red-400">
                     {isTwoPhase ? 'Não foi dessa vez.' : <>
                       Não exatamente.{' '}
-                      <span className="font-normal text-slate-300">
+                      <span className="font-normal text-slate-650 dark:text-slate-300">
                         A resposta correta era:{' '}
-                        <strong className="text-white">{(question.options as Option[]).find((o) => o.isCorrect)?.text}</strong>
+                        <strong className="text-slate-800 dark:text-white">{(question.options as Option[]).find((o) => o.isCorrect)?.text}</strong>
                       </span>
                     </>}
                   </span></>
@@ -473,7 +473,7 @@ export function QuestionCard({
 
             <div className="flex items-start gap-2">
               <span className="mt-0.5 text-slate-400">💡</span>
-              <p className="text-sm leading-relaxed text-slate-300">{question.explanation}</p>
+              <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{question.explanation}</p>
             </div>
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
