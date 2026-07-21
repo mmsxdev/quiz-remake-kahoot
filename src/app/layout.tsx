@@ -4,6 +4,7 @@ import './globals.css'
 import { QuizProvider } from '@/lib/quiz-context'
 import { AudioProvider } from '@/lib/audio-manager'
 import { AudioControls } from '@/components/AudioControls'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -50,6 +51,7 @@ export default function RootLayout({
             <AudioControls />
           </AudioProvider>
         </QuizProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
