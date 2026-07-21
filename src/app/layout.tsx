@@ -44,6 +44,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${outfit.variable} dark`}>
+      <head>
+        {/* Preconnect para Google Fonts — reduz latência de download das fontes (melhora LCP) */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <QuizProvider>
           <AudioProvider>
